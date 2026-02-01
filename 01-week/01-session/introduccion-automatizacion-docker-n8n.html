@@ -1,0 +1,1636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introducción a Automatización, Docker y n8n | Ingeniería Mecatrónica</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #1a2f4b;
+    --secondary-color: #2d5a8a;
+    --accent-color: #00d4ff;
+    --accent-orange: #ff6b35;
+    --light-bg: #f0f4f8;
+    --dark-text: #1a1a1a;
+    --border-color: #d0d0d0;
+    --success-color: #27ae60;
+    --warning-color: #f39c12;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    line-height: 1.6;
+    color: var(--dark-text);
+    background-color: #fff;
+}
+
+/* Header */
+.main-header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 0;
+}
+
+.top-bar {
+    background-color: rgba(0, 0, 0, 0.1);
+    padding: 20px 0;
+    text-align: center;
+}
+
+.brand-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.brand-name {
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin: 5px 0;
+}
+
+.main-nav {
+    background-color: rgba(0, 0, 0, 0.2);
+    padding: 15px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0;
+}
+
+.main-nav a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    border-bottom: 3px solid transparent;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-bottom-color: var(--accent-color);
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Main Content */
+.main-content {
+    padding: 50px 0;
+}
+
+section {
+    margin-bottom: 40px;
+}
+
+h1 {
+    color: var(--primary-color);
+    font-size: 2.5em;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+h2 {
+    color: var(--secondary-color);
+    font-size: 2em;
+    margin-bottom: 25px;
+    border-left: 5px solid var(--accent-orange);
+    padding-left: 15px;
+}
+
+h3 {
+    color: var(--primary-color);
+    font-size: 1.5em;
+    margin-top: 25px;
+    margin-bottom: 15px;
+}
+
+h4 {
+    color: var(--secondary-color);
+    font-size: 1.2em;
+    margin-bottom: 10px;
+}
+
+/* Hero Section */
+.hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 60px 40px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.hero-section h1 {
+    color: white;
+    margin-bottom: 20px;
+}
+
+.lead {
+    font-size: 1.2em;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Divider */
+.divider {
+    border: none;
+    border-top: 2px solid var(--border-color);
+    margin: 40px 0;
+}
+
+.divider-thick {
+    border: none;
+    border-top: 3px solid var(--accent-color);
+    margin: 50px 0;
+}
+
+/* Definition Box */
+.definition-box {
+    background-color: #e0f7ff;
+    border-left: 5px solid var(--secondary-color);
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+    font-size: 1.05em;
+}
+
+/* Reflection Box */
+.reflection-box {
+    background-color: #fff3cd;
+    border-left: 5px solid var(--warning-color);
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+.reflection-box h4 {
+    color: #856404;
+    margin-bottom: 10px;
+}
+
+.reflection-box p {
+    color: #856404;
+    line-height: 1.7;
+}
+
+.reflection-box ul {
+    margin-left: 20px;
+    color: #856404;
+}
+
+/* Comparison Cards */
+.comparison-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.card h3,
+.card h4 {
+    color: var(--secondary-color);
+    margin-top: 0;
+}
+
+.qa-card,
+.qc-card {
+    border-top: 4px solid;
+}
+
+.qa-card {
+    border-top-color: var(--success-color);
+}
+
+.qc-card {
+    border-top-color: var(--accent-orange);
+}
+
+/* Strategy Grid */
+.strategy-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.strategy-box {
+    background-color: var(--light-bg);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.strategy-box h5 {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+}
+
+.strategy-box ul {
+    list-style-position: inside;
+    margin-left: 10px;
+}
+
+.strategy-box li {
+    margin-bottom: 8px;
+}
+
+/* Tables */
+.table-responsive {
+    overflow-x: auto;
+    margin: 30px 0;
+}
+
+.styled-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.styled-table thead tr {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: left;
+    font-weight: 500;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.styled-table tbody tr:hover {
+    background-color: var(--light-bg);
+}
+
+.styled-table tbody tr:nth-child(odd) {
+    background-color: #fafafa;
+}
+
+/* Tags */
+.tag {
+    display: inline-block;
+    padding: 5px 12px;
+    margin: 5px 5px 5px 0;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+.tag-docker {
+    background-color: #e7f3ff;
+    color: #004085;
+}
+
+.tag-n8n {
+    background-color: #fff3e7;
+    color: #8b4513;
+}
+
+.tag-automation {
+    background-color: #e2f5e2;
+    color: #155724;
+}
+
+/* Code Blocks */
+pre {
+    background-color: #2d2d2d;
+    color: #f8f8f2;
+    padding: 20px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 20px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+code {
+    font-family: 'Courier New', monospace;
+    background-color: #f4f4f4;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--primary-color);
+}
+
+pre code {
+    background-color: transparent;
+    color: #f8f8f2;
+    padding: 0;
+}
+
+/* Video Container */
+.video-container {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    height: 0;
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 20px 0;
+}
+
+.video-container iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Videos Grid */
+.videos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.video-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.video-card .video-thumbnail {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    overflow: hidden;
+    background-color: #000;
+}
+
+.video-card .video-thumbnail iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.video-card .video-info {
+    padding: 15px;
+}
+
+.video-card h4 {
+    margin: 0 0 10px 0;
+    font-size: 1em;
+}
+
+.video-card p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* Case Study Section */
+.case-study-section {
+    background-color: var(--light-bg);
+    padding: 40px;
+    border-radius: 10px;
+    margin: 40px 0;
+}
+
+.case-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.case-header h2 {
+    border-left: none;
+    padding-left: 0;
+    margin-bottom: 10px;
+}
+
+.case-header h3 {
+    color: var(--accent-orange);
+    font-size: 1.3em;
+}
+
+.scenario-box {
+    background: white;
+    border-left: 4px solid var(--accent-orange);
+    padding: 20px;
+    margin: 20px 0;
+    border-radius: 5px;
+}
+
+.scenario-box h4 {
+    color: var(--secondary-color);
+    margin-top: 0;
+}
+
+/* Footer */
+.main-footer {
+    background: var(--primary-color);
+    color: white;
+    text-align: center;
+    padding: 40px 0;
+    margin-top: 50px;
+}
+
+.main-footer p {
+    margin: 8px 0;
+    font-size: 0.95em;
+}
+
+.main-footer ul {
+    list-style: none;
+    margin-top: 20px;
+}
+
+.main-footer li {
+    margin: 8px 0;
+}
+
+.main-footer a {
+    color: #fff9e6;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.main-footer a:hover {
+    color: var(--accent-color);
+}
+
+/* Scroll to Top Button */
+#scrollTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    font-size: 18px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    z-index: 99;
+    transition: background-color 0.3s;
+}
+
+#scrollTopBtn:hover {
+    background-color: var(--accent-orange);
+}
+
+/* Lists */
+ul, ol {
+    margin: 15px 0;
+    margin-left: 30px;
+}
+
+li {
+    margin: 8px 0;
+    line-height: 1.7;
+}
+
+/* Links */
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+a:hover {
+    color: var(--accent-orange);
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+    }
+    
+    .hero-section {
+        padding: 40px 20px;
+    }
+    
+    .main-nav ul {
+        flex-direction: column;
+    }
+    
+    .main-nav a {
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .comparison-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .strategy-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .videos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="top-bar">
+            <div class="container brand-container">
+                <img src="https://raw.githubusercontent.com/code-corhuila/material-mineria-datos/b3725d694125ab35294ddfe415a327bc1445d32c/01-week/01-session/LOGO%20CORHUILA%20BLANCO%20PNG%20(2).png" alt="Logo Corhuila" class="logo-corhuila" style="max-width: 120px; height: auto; margin-bottom: 15px;">
+                <h1 class="brand-name" style="color: white;">Automatización, Docker y n8n</h1>
+                <p style="color: white;">Ingeniería Mecatrónica</p>
+            </div>
+        </div>
+        <nav class="main-nav">
+            <div class="container">
+                <ul>
+                    <li><a href="#introduccion">Introducción</a></li>
+                    <li><a href="#automatizacion">Automatización</a></li>
+                    <li><a href="#docker">Docker</a></li>
+                    <li><a href="#n8n">n8n</a></li>
+                    <li><a href="#casos-uso">Casos de Uso</a></li>
+                    <li><a href="#instalacion">Instalación</a></li>
+                    <li><a href="#videos">Videos</a></li>
+                    <li><a href="#primeros-pasos">Primeros Pasos</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container main-content">
+
+        <section id="introduccion" class="hero-section">
+            <h1>Automatización con Docker y n8n</h1>
+            <p class="lead">Aprende a automatizar procesos industriales y tareas repetitivas usando Docker para contenerización y n8n como plataforma de orquestación. Una introducción completa a la automatización moderna para ingeniería mecatrónica.</p>
+        </section>
+
+        <hr class="divider">
+
+        <section id="que-es">
+            <h2>1. ¿Qué es la Automatización de Software?</h2>
+            <p>La automatización de software es el proceso de crear flujos de trabajo que ejecutan tareas repetitivas sin intervención manual. En ingeniería mecatrónica, esto es crítico para optimizar procesos industriales, reducir errores y mejorar la eficiencia.</p>
+            
+            <blockquote class="definition-box">
+                <strong>Automatización de Software:</strong> Creación de flujos de trabajo automatizados que integran múltiples sistemas, ejecutan tareas sin intervención manual y permiten comunicación entre aplicaciones heterogéneas.
+            </blockquote>
+
+            <h3>Beneficios en Ingeniería Mecatrónica</h3>
+            <ul>
+                <li><strong>Reducción de errores:</strong> Eliminación de errores manuales en procesos críticos</li>
+                <li><strong>Eficiencia:</strong> Procesos más rápidos y optimizados</li>
+                <li><strong>Escalabilidad:</strong> Manejo de múltiples tareas simultáneamente</li>
+                <li><strong>Integración:</strong> Conexión entre sistemas legacy y modernos</li>
+                <li><strong>Monitoreo:</strong> Seguimiento en tiempo real de procesos</li>
+                <li><strong>Reducción de costos:</strong> Menos recurso humano en tareas repetitivas</li>
+            </ul>
+
+            <h3>Casos Típicos</h3>
+            <div class="comparison-cards">
+                <div class="card">
+                    <h4>Monitoreo Sensores</h4>
+                    <p>Recopilar datos de sensores industriales y generar alertas automáticas.</p>
+                </div>
+                <div class="card">
+                    <h4>Orquestación de Máquinas</h4>
+                    <p>Coordinar secuencia de operaciones entre múltiples máquinas.</p>
+                </div>
+                <div class="card">
+                    <h4>Reportes Automáticos</h4>
+                    <p>Generar y enviar reportes de producción sin intervención.</p>
+                </div>
+                <div class="card">
+                    <h4>Mantenimiento Predictivo</h4>
+                    <p>Alertas automáticas basadas en patrones de datos históricos.</p>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="automatizacion">
+            <h2>2. Conceptos Clave de Automatización</h2>
+            <p>Entender estos conceptos es fundamental para diseñar sistemas de automatización efectivos.</p>
+
+            <h3>Componentes de un Flujo de Automatización</h3>
+            <div class="strategy-grid">
+                <div class="strategy-box">
+                    <h5>Disparador (Trigger)</h5>
+                    <p>Evento que inicia el flujo. Ejemplo: Webhooks, APIs, eventos programados, cambios en base de datos.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Acciones</h5>
+                    <p>Tareas que ejecuta el flujo. Ejemplo: Enviar email, actualizar BD, llamar APIs, transformar datos.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Condicionales</h5>
+                    <p>Lógica que decide qué hacer según condiciones. Ejemplo: IF/ELSE, validaciones.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Integraciones</h5>
+                    <p>Conexión entre sistemas externos. Ejemplo: APIs, bases de datos, servicios en la nube.</p>
+                </div>
+            </div>
+
+            <h3>Ejemplo Simple de Flujo</h3>
+            <pre><code>Flujo: Alertar si temperatura excede umbral
+┌─────────────────────────────────────────────┐
+│ DISPARADOR: Sensor envia temperatura cada 1min│
+└────────────────┬────────────────────────────┘
+                 │
+                 ▼
+┌──────────────────────────────────────┐
+│ CONDICIÓN: ¿Temperatura > 80°C?      │
+└────────┬───────────────────┬─────────┘
+         │ SI                │ NO
+         ▼                   ▼
+   ACCIÓN: Enviar       ACCIÓN: Log
+   alerta email         datos normales
+   y SMS
+</code></pre>
+
+            <h3>Patrones de Integración</h3>
+            <div class="table-responsive">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Patrón</th>
+                            <th>Descripción</th>
+                            <th>Caso de Uso</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Sincronización</strong></td>
+                            <td>Mantener datos igual entre sistemas</td>
+                            <td>Copiar datos entre BD</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Orquestación</strong></td>
+                            <td>Coordinar múltiples pasos secuencialmente</td>
+                            <td>Workflow de producción</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Transformación</strong></td>
+                            <td>Convertir datos de un formato a otro</td>
+                            <td>Mapear datos de sensores</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enrutamiento</strong></td>
+                            <td>Dirigir datos a diferentes destinos</td>
+                            <td>Enviar alertas a diferentes canales</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Agregación</strong></td>
+                            <td>Combinar datos de múltiples fuentes</td>
+                            <td>Reportes consolidados</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="docker">
+            <h2>3. Docker: Contenerización de Aplicaciones</h2>
+            <p>Docker es una plataforma que permite empaquetar aplicaciones con todas sus dependencias en contenedores ligeros, asegurando que funcionen igual en cualquier entorno.</p>
+
+            <blockquote class="definition-box">
+                <strong>Docker:</strong> Herramienta de contenerización que crea "cajas" (contenedores) con todo lo necesario para ejecutar una aplicación: código, dependencias, librerías y configuración.
+            </blockquote>
+
+            <h3>¿Por Qué Docker?</h3>
+            <div class="comparison-cards">
+                <div class="card qa-card">
+                    <h4>Sin Docker</h4>
+                    <ul>
+                        <li>❌ "Funciona en mi PC, no en el servidor"</li>
+                        <li>❌ Conflictos de versiones</li>
+                        <li>❌ Instalación manual compleja</li>
+                        <li>❌ Difícil reproducibilidad</li>
+                    </ul>
+                </div>
+                <div class="card qc-card">
+                    <h4>Con Docker</h4>
+                    <ul>
+                        <li>✅ Consistencia garantizada</li>
+                        <li>✅ Aislamiento de aplicaciones</li>
+                        <li>✅ Distribución simple</li>
+                        <li>✅ Fácil reproducibilidad</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>Conceptos Clave de Docker</h3>
+            <div class="strategy-grid">
+                <div class="strategy-box">
+                    <h5>Imagen Docker</h5>
+                    <p>Plantilla/blueprint con instrucciones para crear un contenedor. Es como un "plano" de construcción.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Contenedor</h5>
+                    <p>Instancia en ejecución de una imagen. Es una aplicación corriendo en su propio ambiente aislado.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Dockerfile</h5>
+                    <p>Archivo de texto con instrucciones para crear una imagen Docker.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Docker Hub</h5>
+                    <p>Registro público donde se almacenan y comparten imágenes Docker.</p>
+                </div>
+            </div>
+
+            <h3>Estructura de un Dockerfile</h3>
+            <pre><code># Dockerfile - Instrucciones para construir imagen
+FROM python:3.9-slim
+# Imagen base: Python 3.9
+
+WORKDIR /app
+# Directorio de trabajo en contenedor
+
+COPY requirements.txt .
+# Copiar archivo de dependencias
+
+RUN pip install -r requirements.txt
+# Instalar dependencias
+
+COPY . .
+# Copiar código de aplicación
+
+EXPOSE 5000
+# Puerto que expone
+
+CMD ["python", "app.py"]
+# Comando para ejecutar
+</code></pre>
+
+            <h3>Comandos Docker Básicos</h3>
+            <pre><code># Construir imagen
+docker build -t mi-app:1.0 .
+
+# Ejecutar contenedor
+docker run -p 5000:5000 mi-app:1.0
+
+# Listar contenedores
+docker ps
+docker ps -a
+
+# Ver logs
+docker logs nombre-contenedor
+
+# Detener contenedor
+docker stop nombre-contenedor
+
+# Eliminar contenedor
+docker rm nombre-contenedor
+
+# Ver imágenes
+docker images</code></pre>
+
+            <div class="reflection-box">
+                <h4>💡 Docker Compose</h4>
+                <p>Para aplicaciones con múltiples contenedores (ej: app + base de datos + cache), usa Docker Compose para orquestar todos juntos con un archivo YAML.</p>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="n8n">
+            <h2>4. n8n: Plataforma de Automatización Workflow</h2>
+            <p>n8n es una plataforma open-source que permite crear flujos de automatización visuales sin escribir código (o con poco código). Es ideal para integrar sistemas y automatizar procesos complejos.</p>
+
+            <blockquote class="definition-box">
+                <strong>n8n:</strong> Plataforma de automatización basada en workflows visuales que conecta múltiples aplicaciones y servicios para crear flujos de automatización potentes y complejos.
+            </blockquote>
+
+            <h3>Características Principales</h3>
+            <div class="comparison-cards">
+                <div class="card">
+                    <h4>Visual Workflow</h4>
+                    <p>Crear flujos arrastrando y soltando nodos, sin escribir código.</p>
+                </div>
+                <div class="card">
+                    <h4>300+ Integraciones</h4>
+                    <p>Conecta con APIs, bases de datos, servicios en la nube y aplicaciones.</p>
+                </div>
+                <div class="card">
+                    <h4>Open Source</h4>
+                    <p>Código abierto, auto-hospedable, sin limitaciones de uso.</p>
+                </div>
+                <div class="card">
+                    <h4>Code Nodes</h4>
+                    <p>Opción de escribir JavaScript para lógica compleja.</p>
+                </div>
+                <div class="card">
+                    <h4>Webhooks & Timers</h4>
+                    <p>Disparadores por webhook, horarios programados, eventos.</p>
+                </div>
+                <div class="card">
+                    <h4>Error Handling</h4>
+                    <p>Manejo robusto de errores y reintentos automáticos.</p>
+                </div>
+            </div>
+
+            <h3>Comparativa: n8n vs Alternativas</h3>
+            <div class="table-responsive">
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>Plataforma</th>
+                            <th>Tipo</th>
+                            <th>Costo</th>
+                            <th>Mejor Para</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>n8n</strong></td>
+                            <td>Open Source</td>
+                            <td>Gratis (autohospedado)</td>
+                            <td>Automatización empresarial, control total</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Zapier</strong></td>
+                            <td>Nube (SaaS)</td>
+                            <td>Suscripción</td>
+                            <td>Automatización simple, uso casual</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Make (Integromat)</strong></td>
+                            <td>Nube (SaaS)</td>
+                            <td>Suscripción</td>
+                            <td>Automatización visual simple</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Node-RED</strong></td>
+                            <td>Open Source</td>
+                            <td>Gratis</td>
+                            <td>IoT, integración de hardware</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3>Nodos Principales en n8n</h3>
+            <div class="strategy-grid">
+                <div class="strategy-box">
+                    <h5>Trigger Nodes</h5>
+                    <p>Inician el flujo. Ejemplo: Webhook, Cron, Manual trigger.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Action Nodes</h5>
+                    <p>Realizan acciones. Ejemplo: HTTP Request, Send Email, Update Database.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Logic Nodes</h5>
+                    <p>Control de flujo. Ejemplo: If, Switch, Loop.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Data Transform</h5>
+                    <p>Transforman datos. Ejemplo: Function, Item Lists, Merge.</p>
+                </div>
+            </div>
+
+            <h3>Estructura Básica de un Flujo n8n</h3>
+            <pre><code>
+Trigger (Webhook)
+      ↓
+   HTTP Request ← GET datos sensor
+      ↓
+   IF Condition ← ¿Valor > umbral?
+   /    \
+  SI     NO
+  ↓      ↓
+Send    Log
+Email   Data
+  ↓      ↓
+Success  Success
+</code></pre>
+
+            <div class="reflection-box">
+                <h4>🔧 Ventajas para Mecatrónica</h4>
+                <ul>
+                    <li>✅ Integración fácil con IoT y sensores (HTTP, WebSocket, MQTT)</li>
+                    <li>✅ Automatización sin escribir código (pero con opción de JS si necesitas)</li>
+                    <li>✅ Monitoreo en tiempo real de procesos</li>
+                    <li>✅ Alertas y notificaciones automáticas</li>
+                    <li>✅ Historial y logging de todas las ejecuciones</li>
+                </ul>
+            </div>
+        </section>
+
+        <hr class="divider-thick">
+
+        <section id="casos-uso" class="case-study-section">
+            <div class="case-header">
+                <h2>5. Casos de Uso en Ingeniería Mecatrónica</h2>
+                <h3>Aplicaciones Prácticas Reales</h3>
+            </div>
+
+            <h3>Caso 1: Monitoreo de Temperatura en Línea de Producción</h3>
+            <div class="scenario-box">
+                <h4>Escenario</h4>
+                <p>Una línea de producción tiene 10 máquinas con sensores de temperatura. Necesitas alertar automáticamente si alguna excede 80°C y registrar los datos.</p>
+                
+                <h4>Solución con n8n</h4>
+                <pre><code>Webhook (sensor envía JSON)
+      ↓
+HTTP Request → Obtener temperatura actual
+      ↓
+IF temperature > 80
+   ↓
+Send Slack Alert + Email
+      ↓
+Log to Database (InfluxDB)
+      ↓
+Webhook Response (OK)
+</code></pre>
+                
+                <h4>Beneficios</h4>
+                <ul>
+                    <li>Alertas en tiempo real sin monitoreo manual</li>
+                    <li>Histórico automático de temperaturas para análisis</li>
+                    <li>Integración con Slack/Email para notificación inmediata</li>
+                </ul>
+            </div>
+
+            <h3>Caso 2: Sincronización de Órdenes de Producción</h3>
+            <div class="scenario-box">
+                <h4>Escenario</h4>
+                <p>Sistema ERP genera órdenes de producción, pero necesitas enviarlas automáticamente al MES (Manufacturing Execution System) en la fábrica.</p>
+                
+                <h4>Solución con n8n</h4>
+                <pre><code>ERP Webhook (nueva orden)
+      ↓
+Transform (mapear campos)
+      ↓
+POST to MES API
+      ↓
+IF success
+   → Email confirmación
+   → Log a BD
+ELSE
+   → Retry 3 veces
+   → Alert admin
+</code></pre>
+                
+                <h4>Beneficios</h4>
+                <ul>
+                    <li>Integración automática entre sistemas heterogéneos</li>
+                    <li>Reducción de errores de entrada manual</li>
+                    <li>Trazabilidad completa de órdenes</li>
+                </ul>
+            </div>
+
+            <h3>Caso 3: Reporte Diario Automático de Producción</h3>
+            <div class="scenario-box">
+                <h4>Escenario</h4>
+                <p>Generar reporte de producción cada día a las 6 PM con datos consolidados de múltiples fuentes (MES, inventario, calidad).</p>
+                
+                <h4>Solución con n8n</h4>
+                <pre><code>Cron Trigger (18:00 diariamente)
+      ↓
+Query MES DB (producción del día)
+      ↓
+Query Inventory DB (stock)
+      ↓
+Query Quality DB (defectos)
+      ↓
+Merge Data
+      ↓
+Generate PDF Report
+      ↓
+Send Email a directivos
+      ↓
+Save Copy to SharePoint
+</code></pre>
+                
+                <h4>Beneficios</h4>
+                <ul>
+                    <li>Reportes precisos sin intervención manual</li>
+                    <li>Datos consolidados de múltiples sistemas</li>
+                    <li>Distribución automática a stakeholders</li>
+                </ul>
+            </div>
+
+            <h3>Caso 4: Mantenimiento Predictivo</h3>
+            <div class="scenario-box">
+                <h4>Escenario</h4>
+                <p>Sensores IoT envían vibración/temperatura de máquinas. Si detectas anomalías, genera orden de mantenimiento automáticamente.</p>
+                
+                <h4>Solución con n8n</h4>
+                <pre><code>Sensor Data (webhook)
+      ↓
+Function Node → Calcular anomalía
+      ↓
+IF anomaly_score > 0.8
+   → Create Maintenance Order (CMMS)
+   → Alert Maintenance Team (Slack)
+   → Log Incident
+   → Schedule Follow-up
+</code></pre>
+                
+                <h4>Beneficios</h4>
+                <ul>
+                    <li>Detección proactiva de problemas</li>
+                    <li>Reducción de downtime no planificado</li>
+                    <li>Órdenes de mantenimiento automáticas</li>
+                </ul>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="instalacion">
+            <h2>6. Instalación de Docker y n8n</h2>
+            <p>Aprenderemos a instalar todo lo necesario para ejecutar n8n localmente usando Docker.</p>
+
+            <h3>Requisitos Previos</h3>
+            <ul>
+                <li>Sistema operativo: Windows, macOS o Linux</li>
+                <li>Mínimo 2GB de RAM disponibles</li>
+                <li>Acceso a internet</li>
+                <li>Permisos de administrador</li>
+            </ul>
+
+            <h3>Paso 1: Instalar Docker</h3>
+            <h4>En Windows/macOS:</h4>
+            <pre><code># 1. Descargar Docker Desktop
+# Ir a https://www.docker.com/products/docker-desktop
+
+# 2. Instalar siguiendo el wizard
+
+# 3. Verificar instalación (abre terminal/PowerShell)
+docker --version
+docker run hello-world
+</code></pre>
+
+            <h4>En Linux (Ubuntu):</h4>
+            <pre><code># Actualizar índices
+sudo apt update
+
+# Instalar dependencias
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+
+# Agregar repositorio Docker
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+
+# Instalar Docker
+sudo apt install -y docker-ce
+
+# Verificar
+docker --version
+
+# Agregar tu usuario al grupo docker
+sudo usermod -aG docker $USER
+</code></pre>
+
+            <h3>Paso 2: Instalar n8n con Docker</h3>
+            <pre><code># Opción 1: Ejecutar n8n con almacenamiento local
+docker run -d \
+  -p 5678:5678 \
+  -v ~/.n8n:/home/node/.n8n \
+  -e NODE_ENV=production \
+  n8nio/n8n
+
+# Opción 2: Con Docker Compose (recomendado)
+# Crear archivo docker-compose.yml:
+</code></pre>
+
+            <h3>Archivo docker-compose.yml para n8n</h3>
+            <pre><code>version: '3.8'
+
+services:
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    environment:
+      - NODE_ENV=production
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=password123
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - WEBHOOK_URL=http://localhost:5678/
+    volumes:
+      - n8n_storage:/home/node/.n8n
+    restart: unless-stopped
+
+  # Opcional: PostgreSQL para almacenamiento persistente
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: n8n
+      POSTGRES_PASSWORD: n8npassword
+      POSTGRES_DB: n8n
+    volumes:
+      - postgres_storage:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  n8n_storage:
+  postgres_storage:
+</code></pre>
+
+            <h3>Paso 3: Ejecutar n8n</h3>
+            <pre><code># Si usas docker-compose.yml:
+docker-compose up -d
+
+# Verificar que está corriendo
+docker ps
+
+# Ver logs
+docker-compose logs n8n
+
+# Acceder a n8n
+# Abre navegador: http://localhost:5678
+</code></pre>
+
+            <h3>Paso 4: Configuración Inicial n8n</h3>
+            <pre><code># 1. Accede a http://localhost:5678
+# 2. Completa setup inicial
+# 3. Usuario: admin (default)
+# 4. Contraseña: password123 (del docker-compose.yml)
+# 5. Email: tu-email@example.com
+# 6. ¡Listo! Comienza a crear flujos
+</code></pre>
+
+            <div class="reflection-box">
+                <h4>🚀 Alternativa: n8n Cloud</h4>
+                <p>Si prefieres no instalar, puedes usar <a href="https://app.n8n.cloud" target="_blank">n8n Cloud</a> directamente (versión hosted). Pero para desarrollos serios en mecatrónica, se recomienda autohospedado con Docker.</p>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="primeros-pasos">
+            <h2>7. Crear tu Primer Flujo n8n</h2>
+            <p>Crearemos un flujo simple pero funcional: obtener datos de una API pública y enviar un email.</p>
+
+            <h3>Flujo: Notificación de Clima Diaria</h3>
+            <pre><code>
+DISPARADOR: Cron diariamente a las 8 AM
+     ↓
+ACCIÓN: HTTP GET a API de clima (OpenWeatherMap)
+     ↓
+LÓGICA: IF temperatura > 25°C
+     ├─ TRUE: Send Email "¡Hace calor!"
+     └─ FALSE: Send Email "Clima normal"
+     ↓
+FIN: Log result
+</code></pre>
+
+            <h3>Pasos</h3>
+            <ol>
+                <li><strong>Crea nuevo workflow:</strong> Click en "New" → "Workflow"</li>
+                <li><strong>Agrega Cron Trigger:</strong>
+                    <ul>
+                        <li>Busca "Cron" en nodos</li>
+                        <li>Configura "Todos los días a las 08:00"</li>
+                    </ul>
+                </li>
+                <li><strong>Agrega HTTP Request:</strong>
+                    <ul>
+                        <li>URL: https://api.openweathermap.org/data/2.5/weather?q=YourCity&units=metric&appid=YOUR_API_KEY</li>
+                        <li>Método: GET</li>
+                    </ul>
+                </li>
+                <li><strong>Agrega Condición (If):</strong>
+                    <ul>
+                        <li>Campo: main.temp (del resultado HTTP)</li>
+                        <li>Condición: > 25</li>
+                    </ul>
+                </li>
+                <li><strong>Agrega Send Email:</strong>
+                    <ul>
+                        <li>Para rama TRUE: "Sujeto: ¡Hace calor!"</li>
+                        <li>Para rama FALSE: "Sujeto: Clima normal"</li>
+                    </ul>
+                </li>
+                <li><strong>Agrega Logger:</strong>
+                    <ul>
+                        <li>Para ver output en logs</li>
+                    </ul>
+                </li>
+                <li><strong>Guarda y Activa:</strong> Click "Save" luego "Activate"</li>
+            </ol>
+
+            <h3>Ejemplo: Flujo de Monitoreo de Sensor</h3>
+            <pre><code>// Paso a paso en n8n:
+
+1. WEBHOOK TRIGGER
+   - Nombre: "Sensor Data Input"
+   - Método: POST
+   - URL generada automáticamente (ej: http://localhost:5678/webhook/sensor-data)
+
+2. FUNCTION NODE (Procesar datos)
+   return {
+     temperature: $input.first().json.temp,
+     timestamp: new Date().toISOString(),
+     status: $input.first().json.temp > 80 ? 'ALERT' : 'OK'
+   }
+
+3. IF NODE (Decisión)
+   Condición: temperature > 80
+
+4. RAMA TRUE: SEND SLACK
+   Canal: #alerts
+   Mensaje: "⚠️ Temp > 80°C: {{temperature}}°C"
+
+5. RAMA FALSE: LOG
+   Message: "OK - Temp normal: {{temperature}}°C"
+
+6. MERGE NODES (Join ramas)
+
+7. HTTP NODE (Guardar en BD)
+   URL: POST http://localhost:3000/api/sensor-logs
+   Body: Pasar los datos procesados
+</code></pre>
+
+            <div class="reflection-box">
+                <h4>💡 Tips para Debugging</h4>
+                <ul>
+                    <li>Usa "Test" para probar cada nodo individualmente</li>
+                    <li>Mira "Execution History" para ver logs completos</li>
+                    <li>Usa Function Node para transformaciones complejas</li>
+                    <li>Siempre valida datos antes de usar (null checks)</li>
+                </ul>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="videos">
+            <h2>8. Videos Recomendados de YouTube</h2>
+            <p>Estos videos te ayudarán a profundizar en Docker, n8n y automatización.</p>
+
+            <h3>Docker - Fundamentos</h3>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/pTFZFxd4-v8" title="Docker Course - By FreeCodeCamp" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>Docker Course - FreeCodeCamp</h4>
+                        <p>Curso completo de Docker (4 horas). Cubre desde conceptos básicos hasta Docker Compose.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/Cgbkh-I_FEk" title="Docker in 100 Seconds" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>Docker in 100 Seconds - Fireship</h4>
+                        <p>Introducción rápida a Docker. Perfecto para entender conceptos en 2 minutos.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/9zUHg7xjIqQ" title="Docker and Kubernetes" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>Docker and Kubernetes - TechWorld with Nana</h4>
+                        <p>Explicación visual de Docker con Kubernetes. Excelente para entender orquestación.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>n8n - Automatización Workflow</h3>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/rhzgIAVAVp0" title="n8n Workflow Automation Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>n8n Tutorial Completo - n8n Official</h4>
+                        <p>Tutorial oficial de n8n. Cubre instalación, primeros flujos e integraciones.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/5p3lhVkXGE4" title="n8n for Beginners" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>n8n for Beginners - Make It Easy</h4>
+                        <p>Introducción a n8n desde cero. Flujos simples y prácticos.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/VZpH2PXGP0w" title="n8n Advanced Workflows" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>n8n Advanced Workflows - Automation Ninja</h4>
+                        <p>Flujos avanzados en n8n. Error handling, loops, transformaciones complejas.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>IoT y Automatización en Ingeniería</h3>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/qqklc3sVKTQ" title="IoT and Industrial Automation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>IoT and Industrial Automation - Edureka</h4>
+                        <p>Automatización industrial con IoT. Sensores, MQTT, y sistemas integrados.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/5_6tLCVVSFw" title="Real-time Sensor Monitoring" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>Real-time Sensor Monitoring System</h4>
+                        <p>Sistema de monitoreo en tiempo real con sensores IoT y visualización.</p>
+                    </div>
+                </div>
+
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/ZR3IJBY9PEI" title="MQTT Protocol for IoT" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>MQTT Protocol for IoT - Mosquitto</h4>
+                        <p>Protocolo MQTT para comunicación entre dispositivos IoT. Esencial para mecatrónica.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Docker Compose y Multi-Container</h3>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="video-thumbnail">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/SNyh0059Z8s" title="Docker Compose Tutorial" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="video-info">
+                        <h4>Docker Compose Tutorial - Programming with Mosh</h4>
+                        <p>Docker Compose para orquestar múltiples contenedores. Perfecto para n8n + base de datos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <hr class="divider">
+
+        <section id="recursos-adicionales">
+            <h2>9. Recursos Adicionales y Referencias</h2>
+            <p>Materiales de consulta para profundizar en cada tema.</p>
+
+            <h3>Documentación Oficial</h3>
+            <div class="comparison-cards">
+                <div class="card">
+                    <h4>Docker Docs</h4>
+                    <p><a href="https://docs.docker.com/" target="_blank">docs.docker.com</a></p>
+                    <p>Documentación oficial completa de Docker con ejemplos.</p>
+                </div>
+                <div class="card">
+                    <h4>n8n Documentation</h4>
+                    <p><a href="https://docs.n8n.io/" target="_blank">docs.n8n.io</a></p>
+                    <p>Guías, referencia de nodos e integraciones disponibles.</p>
+                </div>
+                <div class="card">
+                    <h4>Docker Hub</h4>
+                    <p><a href="https://hub.docker.com/" target="_blank">hub.docker.com</a></p>
+                    <p>Registro de imágenes Docker. Encuentra imágenes pre-configuradas.</p>
+                </div>
+                <div class="card">
+                    <h4>n8n Community</h4>
+                    <p><a href="https://community.n8n.io/" target="_blank">community.n8n.io</a></p>
+                    <p>Foro de comunidad con ejemplos, plantillas y ayuda.</p>
+                </div>
+            </div>
+
+            <h3>Herramientas Recomendadas</h3>
+            <div class="strategy-grid">
+                <div class="strategy-box">
+                    <h5>Visual Studio Code</h5>
+                    <p>Editor para escribir Dockerfiles y código. Extensiones: Docker, Remote Containers.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Postman</h5>
+                    <p>Herramienta para testear APIs. Crucial para integrar sistemas con n8n.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>Portainer</h5>
+                    <p>UI gráfica para gestionar contenedores Docker sin terminal.</p>
+                </div>
+                <div class="strategy-box">
+                    <h5>DBeaver</h5>
+                    <p>Cliente universal para bases de datos. Conecta con PostgreSQL, MySQL, etc.</p>
+                </div>
+            </div>
+
+            <div class="reflection-box">
+                <h4>🎯 Próximos Pasos</h4>
+                <ol>
+                    <li>Instala Docker en tu máquina</li>
+                    <li>Ejecuta n8n localmente con docker-compose</li>
+                    <li>Crea tu primer flujo simple</li>
+                    <li>Integra con una API pública (OpenWeatherMap, CoinGecko, etc.)</li>
+                    <li>Experimenta con webhooks para simular datos de sensores</li>
+                    <li>Conecta con una base de datos PostgreSQL</li>
+                    <li>Crea flujos más complejos con lógica condicional</li>
+                    <li>¡Automatiza procesos reales en tu entorno laboral!</li>
+                </ol>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <h3>Introducción a Automatización, Docker y n8n - Ingeniería Mecatrónica</h3>
+            <p><strong>Creado por:</strong> Ing. Julian Quimbayo Castro</p>
+            <p>Última actualización: Febrero 2026</p>
+            <p>Este material es de uso educativo. Para más información, consulta la documentación oficial de las tecnologías.</p>
+            <ul>
+                <li><a href="https://docs.docker.com/" target="_blank">Docker Documentation</a></li>
+                <li><a href="https://docs.n8n.io/" target="_blank">n8n Documentation</a></li>
+                <li><a href="https://hub.docker.com/" target="_blank">Docker Hub</a></li>
+                <li><a href="https://n8n.io/" target="_blank">n8n.io</a></li>
+            </ul>
+            <p style="margin-top: 20px; font-size: 0.9em; opacity: 0.9;">© Corporación Universitaria de Huila - Corhuila</p>
+        </div>
+    </footer>
+
+    <button id="scrollTopBtn" title="Volver arriba">↑</button>
+
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    setupScrollButton();
+    setupNavigation();
+    setupSmoothScroll();
+    highlightActiveSection();
+});
+
+// Scroll to Top Button
+function setupScrollButton() {
+    const scrollBtn = document.getElementById('scrollTopBtn');
+
+    window.addEventListener('scroll', function() {
+        if (document.documentElement.scrollTop > 300 || document.body.scrollTop > 300) {
+            scrollBtn.style.display = 'block';
+        } else {
+            scrollBtn.style.display = 'none';
+        }
+    });
+
+    scrollBtn.addEventListener('click', function() {
+        document.documentElement.scrollTop = 0;
+        document.body.scrollTop = 0;
+    });
+}
+
+// Smooth Scroll
+function setupSmoothScroll() {
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+}
+
+// Active Navigation Highlight
+function setupNavigation() {
+    const navLinks = document.querySelectorAll('.main-nav a');
+
+    window.addEventListener('scroll', highlightActiveSection);
+}
+
+function highlightActiveSection() {
+    const navLinks = document.querySelectorAll('.main-nav a');
+    let current = '';
+
+    const sections = document.querySelectorAll('section');
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (pageYOffset >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Copy Code to Clipboard
+document.querySelectorAll('pre').forEach(pre => {
+    const button = document.createElement('button');
+    button.textContent = '📋 Copiar';
+    button.style.cssText = `
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        padding: 8px 12px;
+        background-color: #27ae60;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 12px;
+        opacity: 0;
+        transition: opacity 0.3s;
+        z-index: 10;
+    `;
+
+    pre.style.position = 'relative';
+    pre.appendChild(button);
+
+    pre.addEventListener('mouseenter', () => {
+        button.style.opacity = '1';
+    });
+
+    pre.addEventListener('mouseleave', () => {
+        button.style.opacity = '0';
+    });
+
+    button.addEventListener('click', () => {
+        const code = pre.innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            const originalText = button.textContent;
+            button.textContent = '✅ Copiado!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        });
+    });
+});
+    </script>
+</body>
+</html>
