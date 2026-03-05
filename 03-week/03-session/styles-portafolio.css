@@ -1,6 +1,6 @@
-/*-- ========================
-     VARIABLE GLOBALES Y ESTILOS BASE
-    =============================*/
+/*================
+VARIABLES Y ESTILOS PERSONALIZADOS
+*/
 :root {
     --primary-color: #2c3e50;
     --secondary-color: #3498db;
@@ -22,11 +22,11 @@ body {
     line-height: 1.6;
 }
 
-/*-- ========================
-     BARRA DE NAVEGACIÓN
-    =============================*/
+/*======================
+BARRA DE NAVEGACIÓN
+*/
 .navbar {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color)100%);
+    background: linear-gradient(135deg, var(--primary-color)0%, var(--secondary-color)100%);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
@@ -55,12 +55,11 @@ body {
     color: var(--accent-color) !important;
 }
 
-/*-- ========================
-     SECCIÓN HERO (PORTADA)
-    =============================*/
-
+/*======================
+SECCIÓN HEROE (PORTADA)
+*/
 .hero {
-    background: linear-gradient(135deg, var(--primary-color)0%, var(--secondary-color)100%);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     color: white;
     padding: 120px 0;
     text-align: center;
@@ -134,14 +133,16 @@ body {
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
-/* ===============================
-   ANIMACIONES
-   =============================== */
+
+/*-- ========================
+     ANIMACIONES
+    =============================*/
 @keyframes slideDown {
     from {
         opacity: 0;
         transform: translateY(-30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -153,6 +154,7 @@ body {
         opacity: 0;
         transform: translateY(30px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -163,77 +165,78 @@ body {
     animation: fadeInUp 0.8s ease-out;
 }
 
-/* ===============================
-   SECCIÓN ACERCA DE MI
-   =============================== */
-   .about{
+/*======================
+ACERCA DE MÍ
+========================*/
+
+.about {
     padding: 80px 0;
     background-color: #fff;
-   }
+}
 
-   .section-title{
+.section-title {
     font-size: 2.5rem;
     font-weight: 700;
-    margin-bottom: 100px;
-    color:var(--primary-color );
-    position:relative;
+    margin-bottom: 50px;
+    color: var(--primary-color);
     text-align: center;
-   }
+    position: relative;
+}
 
-   .section-title::after{
-    content:'';
+.section-title::after {
+    content: '';
     display: block;
-    width: 80px;
+    width: 100px;
     height: 4px;
     background-color: var(--secondary-color);
-    margin:20px auto 0;
+    margin: 20px auto 0;
     border-radius: 2px;
-   }
+}
 
-   .about-content{
-   display: grid;
-   grid-template-columns: 1fr 1fr;
-   gap:50px;
-   align-items: center;
-   }
+.about-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 50px;
+    align-items: center;
+}
 
-   .about-text h3{
+.about-text h3 {
     font-size: 1.8rem;
     color: var(--primary-color);
     margin-bottom: 20px;
-   }
+}
 
-   .about-text p{
+.about-text p {
     font-size: 1.05rem;
     color: var(--text-light);
-    margin-bottom: 15px;
     line-height: 1.8;
-   }
+    margin-bottom: 15px;
+}
 
-   .info-list{
+.info-list {
     list-style: none;
     margin-top: 30px;
-   }
+}
 
-   .info-list li{
-  padding: 10px 0;
-  border-bottom: 1px solid var(--light-bg  );
-  display: flex;
+.info-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--light-bg);
+    display: flex;
     align-items: center;
-   }
+}
 
-   .info-list li:last-child{
+.info-list li:last-child {
     border-bottom: none;
-   }
+}
 
-   .info-list strong{
-    color:var(--primary-color);
+.info-list strong {
+    color: var(--primary-color);
     min-width: 120px;
-   }
+}
 
-   /* ===============================
-   SECCIÓN HABILIDADES
-   =============================== */
+/*======================
+HABILIDADES
+========================*/
 .skills {
     padding: 80px 0;
     background-color: var(--light-bg);
@@ -265,29 +268,26 @@ body {
     font-weight: 600;
 }
 
-.skill-item {
+.skill-item{
     margin-bottom: 15px;
 }
 
-.skill-name {
+.skill-name{
     display: flex;
     justify-content: space-between;
-    margin-bottom: 8px;
-    font-weight: 500;
-    color: var(--text-dark);
 }
 
 .skill-bar {
-    background-color: #ddd;
     height: 8px;
+    background-color: #ddd;
     border-radius: 10px;
     overflow: hidden;
 }
 
-.skill-progress {
+.skill-progress{
     height: 100%;
-    background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
-    width: 0%;
-    transition: width 1s ease;
+    background-color: linear-gradient(90deg, var(--secondary-color) 0%, var(--accent-color) 100%);
     border-radius: 10px;
+    transition: width 1.0s ease;
+    width: 0;
 }

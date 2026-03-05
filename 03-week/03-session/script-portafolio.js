@@ -1,21 +1,6 @@
-
-
-
-
-
-
-
-
-
-
-
-// ========================================
-// MÓDULO: ANIMACIÓN DE BARRAS DE HABILIDADES
-// ========================================
-
 const HabilidadesManager = (() => {
     const skillProgressBars = document.querySelectorAll('.skill-progress');
-
+    console.log('HabilidadesManager cargado. Barras encontradas:', skillProgressBars.length);
     // Inicializar
     const init = () => {
         if (skillProgressBars.length === 0) return;
@@ -68,3 +53,22 @@ const HabilidadesManager = (() => {
 
     return { init };
 })();
+
+
+// ========================================
+// INICIALIZACIÓN PRINCIPAL
+// ========================================
+
+// Esperar a que el DOM esté completamente cargado
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('Inicializando portafolio...');
+
+    // Inicializar todos los módulos
+    
+    HabilidadesManager.init();
+    
+    
+   
+
+    console.log('Portafolio inicializado correctamente ✓');
+});
