@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Frontend — Sistema de Gestión Académica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --nextjs:#0070f3;--react:#61dafb;--tailwind:#06b6d4;--ts:#3178c6;--docker:#2496ed;
+      --success:#27ae60;--warning:#f39c12;--accent:#61dafb;--visual:#6f42c1;
+      --nestjs:#e0234e;--pg:#336791;
+    }
+    body{font-family:'Roboto','Segoe UI',Arial,sans-serif;background:#f0f4fa;color:#222;line-height:1.6}
+    .main-header{background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 50%,#0d2137 100%);color:white;padding:0}
+    .top-bar{padding:18px 40px 12px;text-align:center}
+    .brand-name{font-size:24px;font-weight:800;letter-spacing:.5px}
+    .brand-subtitle{font-size:13px;opacity:.85;margin-top:4px}
+    .main-nav{background:rgba(0,0,0,.35);position:sticky;top:0;z-index:100}
+    .main-nav ul{list-style:none;display:flex;flex-wrap:wrap;padding:0 16px;gap:0;justify-content:center}
+    .main-nav a{display:block;padding:10px 13px;color:rgba(255,255,255,.8);text-decoration:none;font-size:12px;font-weight:500;border-bottom:3px solid transparent;transition:background .2s}
+    .main-nav a:hover,.main-nav a.active{background:rgba(255,255,255,.15);color:white;border-bottom-color:var(--react)}
+    .container{max-width:960px;margin:0 auto;padding:32px 16px}
+    .section{background:white;border-radius:12px;padding:28px 32px;margin-bottom:28px;box-shadow:0 2px 8px #0001}
+    .section:first-child{margin-top:0}
+    .section-title{font-size:20px;font-weight:700;color:#0a0a0a;border-bottom:2px solid #e8f4ff;padding-bottom:10px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+    .section-title i{font-size:22px;color:var(--react)}
+    .subsection-title{font-size:15px;font-weight:700;color:#0070f3;margin:20px 0 8px}
+    /* Cards */
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:20px 0}
+    .card{border:1px solid #e0e0e0;border-radius:8px;padding:20px;background:#fff;transition:transform .3s,box-shadow .3s;box-shadow:0 2px 4px #0001}
+    .card:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,.12)}
+    .card-icon{font-size:32px;margin-bottom:12px}
+    .card-title{font-size:15px;font-weight:600;margin-bottom:8px;color:#2c3e50}
+    .card p{font-size:13px;color:#555;line-height:1.5}
+    /* Guide Steps */
+    .guide-step{border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px #0001;border-left:5px solid #0070f3}
+    .guide-step-header{display:flex;align-items:center;gap:18px;padding:14px 20px}
+    .guide-step-header.next{background:linear-gradient(135deg,#0a0a0a 0%,#1a1a2e 100%)}
+    .guide-step-header.config{background:linear-gradient(135deg,#1a1a2e 0%,#0d2137 100%)}
+    .guide-step-header.tailwind{background:linear-gradient(135deg,#0e7490 0%,var(--tailwind) 100%)}
+    .guide-step-header.ts{background:linear-gradient(135deg,#1565a0 0%,var(--ts) 100%)}
+    .guide-step-header.react{background:linear-gradient(135deg,#20232a 0%,#23406e 100%)}
+    .guide-step-header.service{background:linear-gradient(135deg,#b45309 0%,#d97706 100%)}
+    .guide-step-header.layout{background:linear-gradient(135deg,#5b21b6 0%,#7c3aed 100%)}
+    .guide-step-header.page{background:linear-gradient(135deg,#065f46 0%,var(--success) 100%)}
+    .guide-step-header.docker{background:linear-gradient(135deg,#1565a0 0%,var(--docker) 100%)}
+    .guide-step-header.test{background:linear-gradient(135deg,#1e7e34 0%,var(--success) 100%)}
+    .guide-step-header.folder{background:linear-gradient(135deg,#b7791f 0%,#d69e2e 100%)}
+    .guide-step-number{width:45px;height:45px;background:rgba(255,255,255,.2);border-radius:50%;color:white;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+    .guide-step-header-info h3{color:white;font-size:15px;font-weight:700;margin:0}
+    .guide-step-header-info p{color:rgba(255,255,255,.8);font-size:12px;margin:2px 0 0}
+    .guide-step-body{background:#fff;padding:22px 24px;border:1px solid #e8ecf0;border-top:none;border-radius:0 0 10px 10px}
+    /* Code Block */
+    .code-block{position:relative;margin:10px 0 16px;border-radius:8px;overflow:hidden;border-left:5px solid var(--react);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+    .code-block code{display:block;background:#1e1e2e;color:#cdd6f4;padding:16px 18px;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre}
+    .code-label{display:inline-block;padding:3px 10px;border-radius:5px 5px 0 0;font-size:11px;font-weight:700;color:white;text-transform:uppercase}
+    .code-label.cli{background:#0d1117;border:1px solid #30363d}
+    .code-label.tsx{background:#2b6cb0}
+    .code-label.ts{background:var(--ts)}
+    .code-label.env{background:#6f42c1}
+    .code-label.json{background:#e67e22}
+    .code-label.css{background:#e44d26}
+    .code-label.output{background:#1e7e34}
+    .code-label.bash{background:#27ae60}
+    .code-label.docker{background:var(--docker)}
+    .code-label.next{background:#0a0a0a}
+    /* Instruction list */
+    .instruction-list{list-style:none;counter-reset:steps;padding:0}
+    .instruction-list li{counter-increment:steps;display:flex;gap:14px;margin-bottom:10px;align-items:flex-start;background:#f8f9fa;border-radius:8px;padding:12px 16px;border-left:3px solid var(--visual)}
+    .instruction-list li::before{content:counter(steps);min-width:28px;height:28px;background:var(--visual);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px}
+    .instruction-list li strong{color:#0a0a0a}
+    .instruction-list li code{background:#e8e8e8;color:#0070f3;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px}
+    /* Info boxes */
+    .info-box{padding:14px 18px;border-radius:8px;margin:14px 0;font-size:14px}
+    .info-box.info{background:#d1ecf1;border-left:4px solid var(--docker)}
+    .info-box.warning{background:#fff3cd;border-left:4px solid var(--warning)}
+    .info-box.success{background:#d4edda;border-left:4px solid var(--success)}
+    .info-box.danger{background:#f8d7da;border-left:4px solid #e03e3e}
+    .info-box h4{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    /* Tip */
+    .tip{background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 100%);border-left:4px solid var(--success);padding:14px 18px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px}
+    .tip strong{color:var(--success)}
+    /* Verify box */
+    .verify-box{background:linear-gradient(135deg,#f0fff4 0%,#f7fff9 100%);border:2px solid var(--success);border-radius:10px;padding:16px 20px;margin:14px 0}
+    .verify-box h4{color:var(--success);font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    /* Tree block */
+    .tree-block{background:#fafbfc;border:1px solid #e0e0e0;border-left:4px solid var(--warning);border-radius:8px;padding:18px 22px;margin:16px 0;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.8;color:#2c3e50;white-space:pre;overflow-x:auto}
+    /* Tables */
+    .data-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+    .data-table thead th{background:#0a0a0a;color:white;padding:10px 14px;text-align:left;font-weight:600}
+    .data-table tbody td{padding:9px 14px;border-bottom:1px solid #eef2fa}
+    .data-table tbody tr:nth-child(even){background:#f8faff}
+    .data-table tbody tr:hover{background:#e9ecef}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;color:white;margin:2px}
+    .badge.next{background:#0a0a0a}
+    .badge.react{background:#20232a}
+    .badge.tailwind{background:var(--tailwind)}
+    .badge.ts{background:var(--ts)}
+    .badge.docker{background:var(--docker)}
+    .badge.success,.badge.green{background:var(--success)}
+    .badge.warning,.badge.yellow{background:var(--warning);color:#333}
+    .badge.blue{background:#3498db}
+    .badge.purple{background:var(--visual)}
+    .badge.nestjs{background:var(--nestjs)}
+    /* Architecture image */
+    .arch-img{width:100%;border-radius:10px;box-shadow:0 2px 12px #0002;display:block;margin:18px 0 8px}
+    /* Footer */
+    .footer{background:#0a0a0a;color:white;padding:28px 40px;margin-top:28px}
+    .footer-content{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px}
+    .footer-section h3{font-size:14px;font-weight:700;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:6px;color:var(--react)}
+    .footer-section ul{list-style:none}
+    .footer-section ul li{margin:6px 0;font-size:13px;color:rgba(255,255,255,.75)}
+    .footer-section a{color:#ccc;text-decoration:none;transition:color .3s}
+    .footer-section a:hover{color:white}
+    .footer-bottom{text-align:center;font-size:12px;color:rgba(255,255,255,.5);margin-top:18px;border-top:1px solid rgba(255,255,255,.15);padding-top:14px}
+    details{margin:10px 0}
+    summary{cursor:pointer;color:#0070f3;font-weight:600;font-size:13px;margin-bottom:6px}
+    @media(max-width:700px){.guide-step-header{flex-direction:column;text-align:center}.footer-content{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="main-header">
+  <div class="top-bar">
+    <div class="brand-name"><i class="fas fa-layer-group"></i>&nbsp; Guía Frontend — Sistema de Gestión Académica</div>
+    <div class="brand-subtitle">Next.js 15 · React 19 · TypeScript 5 · Tailwind CSS 3 · App Router · Docker</div>
+  </div>
+  <nav class="main-nav">
+    <ul>
+      <li><a href="#intro">Introducción</a></li>
+      <li><a href="#arquitectura">Arquitectura</a></li>
+      <li><a href="#prerequisitos">Prerrequisitos</a></li>
+      <li><a href="#estructura">Estructura</a></li>
+      <li><a href="#paso1">1. Crear Proyecto</a></li>
+      <li><a href="#paso2">2. next.config.ts</a></li>
+      <li><a href="#paso3">3. Variables Entorno</a></li>
+      <li><a href="#paso4">4. globals.css</a></li>
+      <li><a href="#paso5">5. Cliente HTTP</a></li>
+      <li><a href="#paso6">6. Interfaces</a></li>
+      <li><a href="#paso7">7. Servicios</a></li>
+      <li><a href="#paso8">8. Layouts</a></li>
+      <li><a href="#paso9">9. Sidebar</a></li>
+      <li><a href="#paso10">10. Páginas</a></li>
+      <li><a href="#paso11">11. Build & Run</a></li>
+      <li><a href="#paso12">12. Dockerfile</a></li>
+      <li><a href="#errores">Errores Comunes</a></li>
+      <li><a href="#glosario">Glosario</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- ===== INTRODUCCIÓN ===== -->
+  <section id="intro" class="section">
+    <h2 class="section-title"><i class="fas fa-rocket"></i> Introducción</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:14px">En esta guía vas a <strong>construir desde cero el frontend</strong> del Sistema de Gestión Académica. Aprenderás a estructurar un proyecto <strong>Next.js 15</strong> con App Router, crear un cliente HTTP centralizado, definir interfaces TypeScript para las 8 entidades del sistema e implementar servicios que consumen la API REST del backend.</p>
+    <div class="info-box info">
+      <h4><i class="fas fa-bullseye"></i> ¿Qué vas a construir?</h4>
+      Una <strong>aplicación web</strong> con navegación por Sidebar, 8 módulos CRUD (Programas, Estudiantes, Docentes, Asignaturas, Períodos, Asignaciones, Matrículas, Calificaciones) que consumen los endpoints <code>/api/v1</code> del backend NestJS mediante un cliente HTTP tipado con TypeScript.
+    </div>
+    <div class="info-box warning">
+      <h4><i class="fas fa-exclamation-triangle"></i> Prerrequisito</h4>
+      Esta guía es la <strong>segunda parte</strong> del proyecto. El backend con NestJS, Prisma y PostgreSQL debe estar <strong>funcionando</strong> antes de comenzar. Consulta la <strong>Guía Backend</strong> si no lo has hecho.
+    </div>
+    <div class="cards-grid">
+      <div class="card" style="border-left:4px solid #0a0a0a">
+        <div class="card-icon">▲</div>
+        <h4 class="card-title">Framework — Next.js 15</h4>
+        <p>Framework React con <strong>App Router</strong>, Server Components, metadata API y routing basado en carpetas. Corre en el puerto <strong>3000</strong>.</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--react)">
+        <div class="card-icon" style="color:var(--react)"><i class="fab fa-react"></i></div>
+        <h4 class="card-title">UI — React 19</h4>
+        <p>Librería de componentes con Hooks modernos. Usada con <code>'use client'</code> para componentes interactivos como el Sidebar.</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--tailwind)">
+        <div class="card-icon" style="color:var(--tailwind)"><i class="fas fa-paint-brush"></i></div>
+        <h4 class="card-title">Estilos — Tailwind CSS 3</h4>
+        <p>Framework CSS utility-first. Clases de utilidad aplicadas directamente en los componentes JSX. Sin archivos CSS adicionales.</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--ts)">
+        <div class="card-icon" style="color:var(--ts)"><i class="fas fa-code"></i></div>
+        <h4 class="card-title">Tipado — TypeScript 5</h4>
+        <p>Interfaz tipada para las 8 entidades del sistema. Detecta errores en tiempo de compilación antes de que lleguen al navegador.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ARQUITECTURA ===== -->
+  <section id="arquitectura" class="section">
+    <h2 class="section-title"><i class="fas fa-sitemap"></i> Arquitectura del Frontend</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:12px">El Frontend sigue el patrón <strong>App Router de Next.js 15</strong>. Cada módulo del sistema tiene su propia ruta dentro del grupo <code>(dashboard)</code>. Los servicios encapsulan las llamadas a la API y las interfaces definen los contratos de datos con el backend.</p>
+    <div class="code-block"><span class="code-label next">Flujo</span><code>Navegador
+  └─▶  Next.js :3000
+         └─▶  App Router (src/app/)
+                ├── page.tsx  →  redirect('/dashboard')
+                └── (dashboard)/
+                      ├── layout.tsx  →  DashboardLayout + Sidebar
+                      └── [módulo]/page.tsx
+                             └─▶  services/[módulo].service.ts
+                                    └─▶  lib/api.ts  (fetch)
+                                           └─▶  NestJS :3001/api/v1/[recurso]</code></div>
+    <div class="info-box info">
+      <h4><i class="fas fa-route"></i> Flujo de datos</h4>
+      <code>Página React</code> → llama a <code>servicio</code> → invoca <code>lib/api.ts</code> → <code>fetch</code> HTTP → <code>NestJS :3001/api/v1</code> → responde <code>{ data: [...] }</code> → el servicio retorna el array tipado.
+    </div>
+    <img src="arquitectura-backend.svg" alt="Arquitectura del Sistema" class="arch-img">
+  </section>
+
+  <!-- ===== PRERREQUISITOS ===== -->
+  <section id="prerequisitos" class="section">
+    <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Prerrequisitos</h2>
+    <table class="data-table">
+      <thead><tr><th>Herramienta</th><th>Versión</th><th>Instalación</th><th>Verificar</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge ts">Node.js</span></td><td>v22.x</td><td><code>winget install OpenJS.NodeJS.LTS</code></td><td><code>node --version</code></td></tr>
+        <tr><td><span class="badge ts">npm</span></td><td>v10.x</td><td>Incluido con Node.js</td><td><code>npm --version</code></td></tr>
+        <tr><td><span class="badge docker">Docker Desktop</span></td><td>v29.x</td><td>docker.com/get-started</td><td><code>docker --version</code></td></tr>
+        <tr><td><span class="badge nestjs">Backend NestJS</span></td><td>corriendo en :3001</td><td>Ver Guía Backend</td><td><code>Invoke-WebRequest http://localhost:3001/api/v1</code></td></tr>
+      </tbody>
+    </table>
+    <div class="code-block"><span class="code-label cli">CLI — PowerShell</span><code># 1. Verificar que Docker y la BD están activos
+docker ps    # gestion_academica_db → Up (healthy)
+
+# 2. Verificar que el backend responde
+Invoke-WebRequest -Uri "http://localhost:3001/api/v1" -UseBasicParsing | Select-Object StatusCode
+# Debe mostrar: StatusCode: 200
+
+# Si el backend no está corriendo, ve a la carpeta backend/ y ejecuta:
+# $env:DATABASE_URL="postgresql://admin:admin123@localhost:5432/gestion_academica_db"
+# $env:PORT="3001"
+# cd backend ; npm run start:dev</code></div>
+  </section>
+
+  <!-- ===== ESTRUCTURA ===== -->
+  <section id="estructura" class="section">
+    <h2 class="section-title"><i class="fas fa-folder-open"></i> Estructura del Proyecto</h2>
+    <div class="tree-block">frontend/
+├── .env.local                   ← Variables de entorno frontend (NO a Git)
+├── .env.example                 ← Plantilla documentada (sí a Git)
+├── next.config.ts               ← Configuración Next.js (env, rewrites…)
+├── tailwind.config.ts           ← Configuración Tailwind CSS
+├── tsconfig.json                ← Configuración TypeScript
+├── postcss.config.mjs           ← PostCSS (procesador de Tailwind)
+├── package.json
+├── Dockerfile                   ← Multi-stage para producción
+└── src/
+    ├── app/
+    │   ├── globals.css          ← @tailwind base/components/utilities
+    │   ├── layout.tsx           ← Layout raíz (html, body, metadata)
+    │   ├── page.tsx             ← Redirige a /dashboard
+    │   └── (dashboard)/         ← Grupo de rutas del panel principal
+    │       ├── layout.tsx       ← Layout con Sidebar + main
+    │       ├── dashboard/
+    │       │   └── page.tsx     ← Página de bienvenida / dashboard
+    │       ├── estudiantes/
+    │       │   └── page.tsx     ← HU-01: listado y CRUD de estudiantes
+    │       ├── docentes/
+    │       │   └── page.tsx     ← HU-02: listado y CRUD de docentes
+    │       ├── programas/
+    │       │   └── page.tsx     ← HU-03: programas académicos
+    │       ├── asignaturas/
+    │       │   └── page.tsx     ← HU-04: asignaturas
+    │       ├── periodos/
+    │       │   └── page.tsx     ← HU-05: períodos académicos
+    │       ├── asignaciones/
+    │       │   └── page.tsx     ← HU-06: asignaciones docente
+    │       ├── matriculas/
+    │       │   └── page.tsx     ← HU-07: matrículas
+    │       └── calificaciones/
+    │           └── page.tsx     ← HU-08: calificaciones
+    ├── components/
+    │   └── layout/
+    │       └── Sidebar.tsx      ← Sidebar de navegación ('use client')
+    ├── interfaces/              ← Tipos TypeScript (1 por entidad)
+    │   ├── programa-academico.interface.ts
+    │   ├── estudiante.interface.ts
+    │   ├── docente.interface.ts
+    │   ├── asignatura.interface.ts
+    │   ├── periodo-academico.interface.ts
+    │   ├── asignacion-docente.interface.ts
+    │   ├── matricula.interface.ts
+    │   └── calificacion.interface.ts
+    ├── services/                ← Servicios HTTP (1 por entidad)
+    │   ├── index.ts             ← Barrel export (re-exports todo)
+    │   ├── programas.service.ts
+    │   ├── estudiantes.service.ts
+    │   ├── docentes.service.ts
+    │   ├── asignaturas.service.ts
+    │   ├── periodos.service.ts
+    │   ├── asignaciones-docente.service.ts
+    │   ├── matriculas.service.ts
+    │   └── calificaciones.service.ts
+    └── lib/
+        └── api.ts               ← Cliente HTTP base (fetch + error handling)</div>
+  </section>
+
+  <!-- ===== PASOS ===== -->
+  <section id="pasos" class="section">
+    <h2 class="section-title"><i class="fas fa-list-ol"></i> Paso a Paso</h2>
+
+    <!-- PASO 1 -->
+    <div id="paso1" class="guide-step">
+      <div class="guide-step-header next">
+        <div class="guide-step-number">1</div>
+        <div class="guide-step-header-info">
+          <h3>Crear el proyecto Next.js con Tailwind CSS</h3>
+          <p>Scaffolding del proyecto frontend dentro de la carpeta raíz del monorepo</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Posiciónate en la carpeta raíz</strong> del proyecto (<code>gestion-academica-sistema/</code>) — donde ya está la carpeta <code>backend/</code>.</li>
+          <li><strong>Ejecuta <code>create-next-app</code></strong> apuntando a la carpeta <code>frontend</code>.</li>
+          <li><strong>Responde el asistente interactivo</strong> con las opciones que se muestran a continuación.</li>
+          <li><strong>Entra a la carpeta <code>frontend/</code></strong> creada.</li>
+        </ul>
+        <div class="code-block"><span class="code-label cli">CLI — desde la raíz del monorepo</span><code># Asegúrate de estar en gestion-academica-sistema/
+# (donde ya existe la carpeta backend/)
+npx create-next-app@latest frontend</code></div>
+        <h3 class="subsection-title">Respuestas al asistente interactivo</h3>
+        <table class="data-table">
+          <thead><tr><th>Pregunta</th><th>Respuesta</th><th>¿Por qué?</th></tr></thead>
+          <tbody>
+            <tr><td>Would you like to use TypeScript?</td><td><strong>Yes</strong></td><td>Tipado estático para todos los componentes y servicios</td></tr>
+            <tr><td>Would you like to use ESLint?</td><td><strong>Yes</strong></td><td>Análisis estático de código</td></tr>
+            <tr><td>Would you like to use Tailwind CSS?</td><td><strong>Yes</strong></td><td>Framework CSS utility-first integrado</td></tr>
+            <tr><td>Would you like your code inside a <code>src/</code> directory?</td><td><strong>Yes</strong></td><td>Mantiene raíz del proyecto limpia</td></tr>
+            <tr><td>Would you like to use App Router?</td><td><strong>Yes</strong></td><td>Router moderno de Next.js 13+</td></tr>
+            <tr><td>Would you like to use Turbopack?</td><td><strong>No</strong></td><td>Webpack estándar más estable en desarrollo</td></tr>
+            <tr><td>Would you like to customize the import alias?</td><td><strong>Yes → @/*</strong></td><td>Importaciones absolutas desde <code>src/</code></td></tr>
+          </tbody>
+        </table>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Verificación — Proyecto creado correctamente</h4>
+          <div class="code-block" style="margin:8px 0 0 0"><span class="code-label cli">CLI — desde /frontend</span><code>cd frontend
+npm run dev
+# Debe mostrar:
+#  ▲ Next.js 15.x.x
+#  - Local:  http://localhost:3000
+# Abre http://localhost:3000 — verás la página por defecto de Next.js
+# Presiona Ctrl+C para detenerlo y continuar con los pasos</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div id="paso2" class="guide-step">
+      <div class="guide-step-header config">
+        <div class="guide-step-number">2</div>
+        <div class="guide-step-header-info">
+          <h3>Configurar next.config.ts</h3>
+          <p>Expone la URL del backend como variable de entorno al cliente</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">El archivo <code>next.config.ts</code> expone la variable <code>NEXT_PUBLIC_API_URL</code> con un valor por defecto en caso de que no esté definida en el sistema. Reemplaza el contenido generado por <code>create-next-app</code>.</p>
+        <div class="code-block"><span class="code-label next">frontend/next.config.ts</span><code>import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  },
+};
+
+export default nextConfig;</code></div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> Prefijo <code>NEXT_PUBLIC_</code></h4>
+          Solo las variables que empiezan con <code>NEXT_PUBLIC_</code> son accesibles en el navegador (client-side). Las demás solo están disponibles en el servidor de Node.js. Nunca pongas secretos en variables <code>NEXT_PUBLIC_</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div id="paso3" class="guide-step">
+      <div class="guide-step-header config">
+        <div class="guide-step-number">3</div>
+        <div class="guide-step-header-info">
+          <h3>Variables de entorno — .env.local y .env.example</h3>
+          <p>Configura la URL del backend de forma segura</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Crea <code>.env.example</code></strong> en la carpeta <code>frontend/</code> — es la plantilla documentada que <em>sí</em> va a Git.</li>
+          <li><strong>Crea <code>.env.local</code></strong> copiando el ejemplo — este archivo <em>nunca</em> va a Git (Next.js lo ignora por defecto).</li>
+        </ul>
+        <div class="code-block"><span class="code-label env">frontend/.env.example</span><code># ==============================================================
+# .env.example — Copiar a .env.local y ajustar valores locales
+# Next.js carga automáticamente .env.local en desarrollo
+# ==============================================================
+
+# URL del backend NestJS (sin /api/v1 al final)
+NEXT_PUBLIC_API_URL=http://localhost:3001</code></div>
+        <div class="code-block"><span class="code-label env">frontend/.env.local</span><code># URL del backend NestJS (sin trailing slash)
+NEXT_PUBLIC_API_URL=http://localhost:3001</code></div>
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip:</strong> En Windows puedes copiar el ejemplo con: <code>copy .env.example .env.local</code>. Verifica que <code>.env.local</code> aparezca en el <code>.gitignore</code> (create-next-app lo agrega automáticamente).
+        </div>
+        <h3 class="subsection-title">Archivos de entorno en Next.js</h3>
+        <table class="data-table">
+          <thead><tr><th>Archivo</th><th>Cuándo se carga</th><th>¿Va a Git?</th></tr></thead>
+          <tbody>
+            <tr><td><code>.env</code></td><td>Siempre</td><td>Sí (sin secretos)</td></tr>
+            <tr><td><code>.env.local</code></td><td>Siempre (sobreescribe .env)</td><td><strong>No</strong></td></tr>
+            <tr><td><code>.env.development</code></td><td>Solo en <code>next dev</code></td><td>Sí (sin secretos)</td></tr>
+            <tr><td><code>.env.production</code></td><td>Solo en <code>next build/start</code></td><td>Sí (sin secretos)</td></tr>
+            <tr><td><code>.env.example</code></td><td>Nunca (solo documentación)</td><td><strong>Sí</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div id="paso4" class="guide-step">
+      <div class="guide-step-header tailwind">
+        <div class="guide-step-number">4</div>
+        <div class="guide-step-header-info">
+          <h3>Limpiar globals.css y páginas por defecto</h3>
+          <p>Eliminar el contenido de ejemplo generado por create-next-app</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">El CLI genera estilos de ejemplo en <code>globals.css</code> y una página de bienvenida en <code>page.tsx</code> que debemos reemplazar con nuestra lógica.</p>
+        <h3 class="subsection-title">4.1 — globals.css</h3>
+        <div class="code-block"><span class="code-label css">frontend/src/app/globals.css</span><code>@tailwind base;
+@tailwind components;
+@tailwind utilities;</code></div>
+        <h3 class="subsection-title">4.2 — page.tsx (raíz)</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">La página raíz redirige inmediatamente al dashboard.</p>
+        <div class="code-block"><span class="code-label tsx">frontend/src/app/page.tsx</span><code>import { redirect } from 'next/navigation';
+
+export default function Home() {
+  redirect('/dashboard');
+}</code></div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> ¿Por qué redirigir?</h4>
+          La ruta <code>/</code> no tiene contenido propio. Al redirigir a <code>/dashboard</code> nos aseguramos de que el layout del panel (con Sidebar) siempre esté presente.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 5 -->
+    <div id="paso5" class="guide-step">
+      <div class="guide-step-header ts">
+        <div class="guide-step-number">5</div>
+        <div class="guide-step-header-info">
+          <h3>Crear el cliente HTTP — lib/api.ts</h3>
+          <p>Funciones reutilizables para todos los métodos HTTP con manejo de errores</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Crea la carpeta <code>src/lib/</code></strong> dentro de <code>frontend/</code>.</li>
+          <li><strong>Crea el archivo <code>api.ts</code></strong> con las cuatro funciones HTTP genéricas: <code>apiGet</code>, <code>apiPost</code>, <code>apiPut</code>, <code>apiDelete</code>.</li>
+          <li>Cada función agrega automáticamente el <strong>prefijo <code>/api/v1</code></strong> a la ruta, por lo que los servicios solo pasan la ruta relativa.</li>
+        </ul>
+        <div class="code-block"><span class="code-label ts">frontend/src/lib/api.ts</span><code>// Cliente HTTP centralizado para la API REST del backend NestJS
+// Base URL configurable desde variable de entorno NEXT_PUBLIC_API_URL
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
+export async function apiGet&lt;T&gt;(path: string): Promise&lt;T&gt; {
+  const res = await fetch(`${BASE_URL}/api/v1${path}`);
+  if (!res.ok) throw new Error(`GET ${path} failed: ${res.status}`);
+  const json = await res.json();
+  return json.data as T;
+}
+
+export async function apiPost&lt;T&gt;(path: string, body: unknown): Promise&lt;T&gt; {
+  const res = await fetch(`${BASE_URL}/api/v1${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`POST ${path} failed: ${res.status}`);
+  const json = await res.json();
+  return json.data as T;
+}
+
+export async function apiPut&lt;T&gt;(path: string, body: unknown): Promise&lt;T&gt; {
+  const res = await fetch(`${BASE_URL}/api/v1${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`PUT ${path} failed: ${res.status}`);
+  const json = await res.json();
+  return json.data as T;
+}
+
+export async function apiDelete&lt;T&gt;(path: string): Promise&lt;T&gt; {
+  const res = await fetch(`${BASE_URL}/api/v1${path}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`DELETE ${path} failed: ${res.status}`);
+  const json = await res.json();
+  return json.data as T;
+}</code></div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> ¿Por qué <code>json.data</code>?</h4>
+          El backend NestJS usa un <strong>ResponseInterceptor</strong> que envuelve todas las respuestas en <code>{ "data": ..., "message": "...", "statusCode": 200 }</code>. Por eso se accede a <code>json.data</code> para obtener el resultado real.
+        </div>
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip — Genéricos TypeScript:</strong> El parámetro <code>&lt;T&gt;</code> permite que TypeScript infiera el tipo de retorno. Por ejemplo: <code>apiGet&lt;Estudiante[]&gt;('/estudiantes')</code> devuelve <code>Promise&lt;Estudiante[]&gt;</code> con autocompletado completo.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 6 -->
+    <div id="paso6" class="guide-step">
+      <div class="guide-step-header ts">
+        <div class="guide-step-number">6</div>
+        <div class="guide-step-header-info">
+          <h3>Crear las interfaces TypeScript — src/interfaces/</h3>
+          <p>Contratos de tipos para las 8 entidades del sistema académico</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Las interfaces reflejan exactamente los modelos del <strong>schema.prisma</strong> del backend. Cada archivo corresponde a una HU.</p>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/programa-academico.interface.ts</span><code>// HU-03 — Programa Académico
+export interface ProgramaAcademico {
+  id: number;
+  nombre: string;
+  codigo: string;
+  facultad: string;
+  duracionSemestres: number;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/estudiante.interface.ts</span><code>// HU-01 — Estudiante
+export interface Estudiante {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  codigoEstudiantil: string;
+  documentoIdentidad: string;
+  correoInstitucional: string;
+  fechaNacimiento: string;
+  programaAcademicoId: number;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/docente.interface.ts</span><code>// HU-02 — Docente
+export interface Docente {
+  id: number;
+  nombres: string;
+  apellidos: string;
+  documentoIdentidad: string;
+  tituloProfesional: string;
+  especialidad: string;
+  correoInstitucional: string;
+  telefono?: string;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/asignatura.interface.ts</span><code>// HU-04 — Asignatura
+export interface Asignatura {
+  id: number;
+  nombre: string;
+  codigo: string;
+  creditos: number;
+  programaAcademicoId: number;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/periodo-academico.interface.ts</span><code>// HU-05 — Período Académico
+export interface PeriodoAcademico {
+  id: number;
+  nombre: string;
+  fechaInicio: string;
+  fechaFin: string;
+  activo: boolean;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/asignacion-docente.interface.ts</span><code>// HU-06 — Asignación Docente
+export interface AsignacionDocente {
+  id: number;
+  docenteId: number;
+  asignaturaId: number;
+  periodoAcademicoId: number;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/matricula.interface.ts</span><code>// HU-07 — Matrícula
+export interface Matricula {
+  id: number;
+  estudianteId: number;
+  asignacionDocenteId: number;
+  fechaInscripcion: string;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">frontend/src/interfaces/calificacion.interface.ts</span><code>// HU-08 — Calificación
+export interface Calificacion {
+  id: number;
+  matriculaId: number;
+  nota1?: number;
+  nota2?: number;
+  nota3?: number;
+  notaDefinitiva?: number;
+  createdAt: string;
+  updatedAt: string;
+}</code></div>
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip — <code>?</code> en TypeScript:</strong> El operador <code>?</code> declara una propiedad como opcional. En <code>Calificacion</code>, las notas pueden ser <code>null</code> o <code>undefined</code> porque el estudiante aún no ha sido calificado.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 7 -->
+    <div id="paso7" class="guide-step">
+      <div class="guide-step-header service">
+        <div class="guide-step-number">7</div>
+        <div class="guide-step-header-info">
+          <h3>Crear los servicios HTTP — src/services/</h3>
+          <p>Una función CRUD por cada entidad usando el cliente HTTP de lib/api.ts</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Cada servicio exporta un objeto con los métodos <code>findAll</code>, <code>findOne</code>, <code>create</code>, <code>update</code> y <code>remove</code>. También define los DTOs de creación y actualización.</p>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/programas.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { ProgramaAcademico } from '@/interfaces/programa-academico.interface';
+
+export type CreateProgramaDto = Omit&lt;ProgramaAcademico, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateProgramaDto = Partial&lt;CreateProgramaDto&gt;;
+
+export const programasService = {
+  findAll: () =&gt; apiGet&lt;ProgramaAcademico[]&gt;('/programa-academico'),
+  findOne: (id: number) =&gt; apiGet&lt;ProgramaAcademico&gt;(`/programa-academico/${id}`),
+  create:  (data: CreateProgramaDto) =&gt; apiPost&lt;ProgramaAcademico&gt;('/programa-academico', data),
+  update:  (id: number, data: UpdateProgramaDto) =&gt; apiPut&lt;ProgramaAcademico&gt;(`/programa-academico/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/programa-academico/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/estudiantes.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { Estudiante } from '@/interfaces/estudiante.interface';
+
+export type CreateEstudianteDto = Omit&lt;Estudiante, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateEstudianteDto = Partial&lt;CreateEstudianteDto&gt;;
+
+export const estudiantesService = {
+  findAll: () =&gt; apiGet&lt;Estudiante[]&gt;('/estudiante'),
+  findOne: (id: number) =&gt; apiGet&lt;Estudiante&gt;(`/estudiante/${id}`),
+  create:  (data: CreateEstudianteDto) =&gt; apiPost&lt;Estudiante&gt;('/estudiante', data),
+  update:  (id: number, data: UpdateEstudianteDto) =&gt; apiPut&lt;Estudiante&gt;(`/estudiante/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/estudiante/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/docentes.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { Docente } from '@/interfaces/docente.interface';
+
+export type CreateDocenteDto = Omit&lt;Docente, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateDocenteDto = Partial&lt;CreateDocenteDto&gt;;
+
+export const docentesService = {
+  findAll: () =&gt; apiGet&lt;Docente[]&gt;('/docente'),
+  findOne: (id: number) =&gt; apiGet&lt;Docente&gt;(`/docente/${id}`),
+  create:  (data: CreateDocenteDto) =&gt; apiPost&lt;Docente&gt;('/docente', data),
+  update:  (id: number, data: UpdateDocenteDto) =&gt; apiPut&lt;Docente&gt;(`/docente/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/docente/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/asignaturas.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { Asignatura } from '@/interfaces/asignatura.interface';
+
+export type CreateAsignaturaDto = Omit&lt;Asignatura, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateAsignaturaDto = Partial&lt;CreateAsignaturaDto&gt;;
+
+export const asignaturasService = {
+  findAll: () =&gt; apiGet&lt;Asignatura[]&gt;('/asignatura'),
+  findOne: (id: number) =&gt; apiGet&lt;Asignatura&gt;(`/asignatura/${id}`),
+  create:  (data: CreateAsignaturaDto) =&gt; apiPost&lt;Asignatura&gt;('/asignatura', data),
+  update:  (id: number, data: UpdateAsignaturaDto) =&gt; apiPut&lt;Asignatura&gt;(`/asignatura/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/asignatura/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/periodos.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { PeriodoAcademico } from '@/interfaces/periodo-academico.interface';
+
+export type CreatePeriodoDto = Omit&lt;PeriodoAcademico, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdatePeriodoDto = Partial&lt;CreatePeriodoDto&gt;;
+
+export const periodosService = {
+  findAll: () =&gt; apiGet&lt;PeriodoAcademico[]&gt;('/periodo-academico'),
+  findOne: (id: number) =&gt; apiGet&lt;PeriodoAcademico&gt;(`/periodo-academico/${id}`),
+  create:  (data: CreatePeriodoDto) =&gt; apiPost&lt;PeriodoAcademico&gt;('/periodo-academico', data),
+  update:  (id: number, data: UpdatePeriodoDto) =&gt; apiPut&lt;PeriodoAcademico&gt;(`/periodo-academico/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/periodo-academico/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/asignaciones-docente.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { AsignacionDocente } from '@/interfaces/asignacion-docente.interface';
+
+export type CreateAsignacionDto = Omit&lt;AsignacionDocente, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateAsignacionDto = Partial&lt;CreateAsignacionDto&gt;;
+
+export const asignacionesService = {
+  findAll: () =&gt; apiGet&lt;AsignacionDocente[]&gt;('/asignacion-docente'),
+  findOne: (id: number) =&gt; apiGet&lt;AsignacionDocente&gt;(`/asignacion-docente/${id}`),
+  create:  (data: CreateAsignacionDto) =&gt; apiPost&lt;AsignacionDocente&gt;('/asignacion-docente', data),
+  update:  (id: number, data: UpdateAsignacionDto) =&gt; apiPut&lt;AsignacionDocente&gt;(`/asignacion-docente/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/asignacion-docente/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/matriculas.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { Matricula } from '@/interfaces/matricula.interface';
+
+export type CreateMatriculaDto = Omit&lt;Matricula, 'id' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateMatriculaDto = Partial&lt;CreateMatriculaDto&gt;;
+
+export const matriculasService = {
+  findAll: () =&gt; apiGet&lt;Matricula[]&gt;('/matricula'),
+  findOne: (id: number) =&gt; apiGet&lt;Matricula&gt;(`/matricula/${id}`),
+  create:  (data: CreateMatriculaDto) =&gt; apiPost&lt;Matricula&gt;('/matricula', data),
+  update:  (id: number, data: UpdateMatriculaDto) =&gt; apiPut&lt;Matricula&gt;(`/matricula/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/matricula/${id}`),
+};</code></div>
+
+        <div class="code-block"><span class="code-label ts">frontend/src/services/calificaciones.service.ts</span><code>import { apiGet, apiPost, apiPut, apiDelete } from '@/lib/api';
+import type { Calificacion } from '@/interfaces/calificacion.interface';
+
+export type CreateCalificacionDto = Omit&lt;Calificacion, 'id' | 'notaDefinitiva' | 'createdAt' | 'updatedAt'&gt;;
+export type UpdateCalificacionDto = Partial&lt;Omit&lt;CreateCalificacionDto, 'matriculaId'&gt;&gt;;
+
+export const calificacionesService = {
+  findAll: () =&gt; apiGet&lt;Calificacion[]&gt;('/calificacion'),
+  findOne: (id: number) =&gt; apiGet&lt;Calificacion&gt;(`/calificacion/${id}`),
+  create:  (data: CreateCalificacionDto) =&gt; apiPost&lt;Calificacion&gt;('/calificacion', data),
+  update:  (id: number, data: UpdateCalificacionDto) =&gt; apiPut&lt;Calificacion&gt;(`/calificacion/${id}`, data),
+  remove:  (id: number) =&gt; apiDelete&lt;void&gt;(`/calificacion/${id}`),
+};</code></div>
+
+        <h3 class="subsection-title">Barrel export — index.ts</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Un archivo <code>index.ts</code> re-exporta todos los servicios. Esto permite importar desde un único punto en lugar de rutas largas.</p>
+        <div class="code-block"><span class="code-label ts">frontend/src/services/index.ts</span><code>export * from './programas.service';
+export * from './estudiantes.service';
+export * from './docentes.service';
+export * from './asignaturas.service';
+export * from './periodos.service';
+export * from './asignaciones-docente.service';
+export * from './matriculas.service';
+export * from './calificaciones.service';</code></div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> Ventaja del barrel export</h4>
+          <div>Sin barrel: <code>import {'{'} estudiantesService {'}'} from '@/services/estudiantes.service';</code></div>
+          <div>Con barrel: <code>import {'{'} estudiantesService, docentesService {'}'} from '@/services';</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 8 -->
+    <div id="paso8" class="guide-step">
+      <div class="guide-step-header layout">
+        <div class="guide-step-number">8</div>
+        <div class="guide-step-header-info">
+          <h3>Crear los layouts — Root Layout y Dashboard Layout</h3>
+          <p>Estructura de páginas: html/body global + panel con Sidebar</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <h3 class="subsection-title">8.1 — Root Layout (src/app/layout.tsx)</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Este layout envuelve <em>toda</em> la aplicación. Define el <code>&lt;html&gt;</code>, el <code>&lt;body&gt;</code> con clases Tailwind, y la metadata global del sitio.</p>
+        <div class="code-block"><span class="code-label tsx">frontend/src/app/layout.tsx</span><code>import type { Metadata } from 'next';
+import './globals.css';
+
+export const metadata: Metadata = {
+  title: 'Sistema de Gestión Académica',
+  description: 'Administración académica — CORHUILA',
+};
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    &lt;html lang="es"&gt;
+      &lt;body className="bg-gray-50 text-gray-900 antialiased"&gt;
+        {children}
+      &lt;/body&gt;
+    &lt;/html&gt;
+  );
+}</code></div>
+        <h3 class="subsection-title">8.2 — Dashboard Layout (src/app/(dashboard)/layout.tsx)</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Este layout se aplica a todas las rutas dentro del grupo <code>(dashboard)</code>. Ubica el <code>Sidebar</code> fijo a la izquierda y el contenido principal a la derecha.</p>
+        <div class="code-block"><span class="code-label tsx">frontend/src/app/(dashboard)/layout.tsx</span><code>import type { Metadata } from 'next';
+import Sidebar from '@/components/layout/Sidebar';
+
+export const metadata: Metadata = {
+  title: 'Sistema de Gestión Académica',
+};
+
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    &lt;div className="flex h-screen overflow-hidden"&gt;
+      &lt;Sidebar /&gt;
+      &lt;main className="flex-1 overflow-y-auto p-6"&gt;{children}&lt;/main&gt;
+    &lt;/div&gt;
+  );
+}</code></div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> Grupos de rutas en App Router</h4>
+          Las carpetas con paréntesis como <code>(dashboard)</code> son <strong>grupos de rutas</strong> — organizan archivos sin afectar la URL. La ruta <code>/dashboard</code> existe, no <code>/(dashboard)/dashboard</code>.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 9 -->
+    <div id="paso9" class="guide-step">
+      <div class="guide-step-header react">
+        <div class="guide-step-number">9</div>
+        <div class="guide-step-header-info">
+          <h3>Crear el Sidebar — src/components/layout/Sidebar.tsx</h3>
+          <p>Componente de navegación lateral con enlaces activos dinámicos</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Crea la carpeta <code>src/components/layout/</code></strong> dentro de <code>frontend/</code>.</li>
+          <li><strong>Marca el componente con <code>'use client'</code></strong> porque usa el hook <code>usePathname()</code> que solo funciona en el navegador.</li>
+          <li><strong>Define el array de navegación <code>navItems</code></strong> con las 9 rutas del sistema.</li>
+          <li>Usa <code>pathname === item.href</code> o <code>startsWith</code> para <strong>resaltar el enlace activo</strong> con clases Tailwind.</li>
+        </ul>
+        <div class="code-block"><span class="code-label tsx">frontend/src/components/layout/Sidebar.tsx</span><code>'use client';
+
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const navItems = [
+  { href: '/dashboard',      label: 'Dashboard' },
+  { href: '/estudiantes',    label: 'Estudiantes' },
+  { href: '/docentes',       label: 'Docentes' },
+  { href: '/programas',      label: 'Programas' },
+  { href: '/asignaturas',    label: 'Asignaturas' },
+  { href: '/periodos',       label: 'Períodos' },
+  { href: '/asignaciones',   label: 'Asignaciones' },
+  { href: '/matriculas',     label: 'Matrículas' },
+  { href: '/calificaciones', label: 'Calificaciones' },
+];
+
+export default function Sidebar() {
+  const pathname = usePathname();
+
+  return (
+    &lt;aside className="w-60 bg-white border-r border-gray-200 flex flex-col"&gt;
+      &lt;div className="px-6 py-5 border-b border-gray-200"&gt;
+        &lt;h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wider"&gt;
+          Gestión Académica
+        &lt;/h2&gt;
+      &lt;/div&gt;
+      &lt;nav className="flex-1 px-3 py-4 space-y-1"&gt;
+        {navItems.map((item) =&gt; {
+          const isActive =
+            pathname === item.href || pathname.startsWith(item.href + '/');
+          return (
+            &lt;Link
+              key={item.href}
+              href={item.href}
+              className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                isActive
+                  ? 'bg-blue-50 text-blue-700'
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              }`}
+            &gt;
+              {item.label}
+            &lt;/Link&gt;
+          );
+        })}
+      &lt;/nav&gt;
+      &lt;div className="px-6 py-4 border-t border-gray-200 text-xs text-gray-400"&gt;
+        Programación Web — CORHUILA 2026A
+      &lt;/div&gt;
+    &lt;/aside&gt;
+  );
+}</code></div>
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip — <code>'use client'</code>:</strong> En App Router todos los componentes son Server Components por defecto. Debes agregar <code>'use client'</code> al inicio del archivo solo cuando usas hooks de React (<code>useState</code>, <code>useEffect</code>, <code>usePathname</code>, etc.) o manejadores de eventos.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 10 -->
+    <div id="paso10" class="guide-step">
+      <div class="guide-step-header page">
+        <div class="guide-step-number">10</div>
+        <div class="guide-step-header-info">
+          <h3>Crear las páginas — Dashboard + 8 módulos</h3>
+          <p>Páginas stub dentro del grupo (dashboard) — una por cada HU</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Cada módulo tiene su carpeta y su <code>page.tsx</code>. Por ahora son <em>stubs</em> que muestran el título — la lógica CRUD se implementa en los Sprints siguientes.</p>
+        <div class="code-block"><span class="code-label tsx">src/app/(dashboard)/dashboard/page.tsx</span><code>export default function DashboardPage() {
+  return (
+    &lt;div&gt;
+      &lt;h1 className="text-2xl font-bold mb-4"&gt;Dashboard&lt;/h1&gt;
+      &lt;p className="text-gray-500"&gt;Bienvenido al Sistema de Gestión Académica.&lt;/p&gt;
+      {/* TODO: Sprint 4 — tarjetas de resumen */}
+    &lt;/div&gt;
+  );
+}</code></div>
+        <div class="code-block"><span class="code-label tsx">src/app/(dashboard)/estudiantes/page.tsx</span><code>export default function EstudiantesPage() {
+  return (
+    &lt;div&gt;
+      &lt;h1 className="text-2xl font-bold mb-4"&gt;Estudiantes&lt;/h1&gt;
+      {/* TODO: HU-01 — listado y formulario CRUD */}
+    &lt;/div&gt;
+  );
+}</code></div>
+        <p style="font-size:13px;color:#555;margin:10px 0">Repite el patrón para los otros 7 módulos, ajustando el nombre de la función y el título:</p>
+        <table class="data-table">
+          <thead><tr><th>Carpeta</th><th>Función del componente</th><th>Título</th><th>HU</th></tr></thead>
+          <tbody>
+            <tr><td><code>docentes/page.tsx</code></td><td><code>DocentesPage</code></td><td>Docentes</td><td>HU-02</td></tr>
+            <tr><td><code>programas/page.tsx</code></td><td><code>ProgramasPage</code></td><td>Programas Académicos</td><td>HU-03</td></tr>
+            <tr><td><code>asignaturas/page.tsx</code></td><td><code>AsignaturasPage</code></td><td>Asignaturas</td><td>HU-04</td></tr>
+            <tr><td><code>periodos/page.tsx</code></td><td><code>PeriodosPage</code></td><td>Períodos Académicos</td><td>HU-05</td></tr>
+            <tr><td><code>asignaciones/page.tsx</code></td><td><code>AsignacionesPage</code></td><td>Asignaciones Docente</td><td>HU-06</td></tr>
+            <tr><td><code>matriculas/page.tsx</code></td><td><code>MatriculasPage</code></td><td>Matrículas</td><td>HU-07</td></tr>
+            <tr><td><code>calificaciones/page.tsx</code></td><td><code>CalificacionesPage</code></td><td>Calificaciones</td><td>HU-08</td></tr>
+          </tbody>
+        </table>
+        <div class="info-box success">
+          <h4><i class="fas fa-check-circle"></i> Estructura de directorios para crear</h4>
+          <div class="code-block" style="margin:8px 0 0 0"><span class="code-label cli">CLI — desde /frontend/src/app/(dashboard)</span><code>mkdir dashboard estudiantes docentes programas asignaturas periodos asignaciones matriculas calificaciones</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 11 -->
+    <div id="paso11" class="guide-step">
+      <div class="guide-step-header test">
+        <div class="guide-step-number">11</div>
+        <div class="guide-step-header-info">
+          <h3>Build y ejecución en desarrollo</h3>
+          <p>Verificar que el proyecto compila sin errores y navegar por los módulos</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Asegúrate</strong> de que el backend (NestJS :3001) y PostgreSQL estén corriendo.</li>
+          <li><strong>Corre el servidor de desarrollo</strong> de Next.js.</li>
+          <li><strong>Navega</strong> a <code>http://localhost:3000</code> — deberías ser redirigido a <code>/dashboard</code>.</li>
+          <li><strong>Verifica</strong> que el Sidebar aparece y los links de navegación funcionan.</li>
+        </ul>
+        <div class="code-block"><span class="code-label cli">CLI — desde /frontend</span><code># Modo desarrollo (con hot-reload)
+$env:NEXT_PUBLIC_API_URL="http://localhost:3001"
+npm run dev
+
+# Debe mostrar:
+#  ▲ Next.js 15.x.x
+#  - Local: http://localhost:3000</code></div>
+        <h3 class="subsection-title">Verificación de build de producción</h3>
+        <div class="code-block"><span class="code-label cli">CLI — desde /frontend</span><code>npm run build
+# Debe terminar sin errores TypeScript. Salida esperada:
+# Route (app)                              Size     First Load JS
+# ┌ ○ /                                    178 B    ...
+# ├ ○ /_not-found                          ...
+# └ ○ /dashboard                           ...
+# ○  (Static) prerendered as static content</code></div>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Checklist de verificación</h4>
+          <ul style="font-size:13px;margin-top:6px;padding-left:8px;list-style:none">
+            <li>☐ <code>http://localhost:3000</code> redirige a <code>/dashboard</code></li>
+            <li>☐ El Sidebar muestra los 9 enlaces de navegación</li>
+            <li>☐ Cada enlace resalta en azul cuando está activo</li>
+            <li>☐ <code>npm run build</code> completa sin errores TypeScript</li>
+            <li>☐ <code>npm run lint</code> no muestra errores de ESLint</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 12 -->
+    <div id="paso12" class="guide-step">
+      <div class="guide-step-header docker">
+        <div class="guide-step-number">12</div>
+        <div class="guide-step-header-info">
+          <h3>Dockerfile — Contenedor de producción</h3>
+          <p>Imagen Docker multi-stage para el frontend Next.js</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:10px">El Dockerfile usa dos etapas: <strong>builder</strong> (compila la app) y <strong>production</strong> (imagen mínima que solo sirve los archivos compilados).</p>
+        <div class="code-block"><span class="code-label docker">frontend/Dockerfile</span><code># ============================================================
+# Etapa 1 — Builder: instala dependencias y compila Next.js
+# ============================================================
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
+
+# ============================================================
+# Etapa 2 — Production: imagen mínima para servir la app
+# ============================================================
+FROM node:22-alpine AS production
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Copia los artefactos del build desde la etapa builder
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
+
+EXPOSE 3000
+
+CMD ["node", "server.js"]</code></div>
+        <div class="info-box warning">
+          <h4><i class="fas fa-exclamation-triangle"></i> Standalone output en next.config.ts</h4>
+          Para que el Dockerfile funcione correctamente, agrega <code>output: 'standalone'</code> en <code>next.config.ts</code>:
+          <div class="code-block" style="margin:8px 0 0 0"><span class="code-label next">frontend/next.config.ts</span><code>const nextConfig: NextConfig = {
+  output: 'standalone',  // ← habilita la salida standalone para Docker
+  env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001',
+  },
+};</code></div>
+        </div>
+        <h3 class="subsection-title">Agregar el servicio frontend a Docker Compose</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Si quieres ejecutar el frontend junto con la base de datos usando Docker Compose, agrega este servicio en el <code>docker-compose.yml</code> raíz:</p>
+        <div class="code-block"><span class="code-label bash">docker-compose.yml — fragmento a agregar</span><code>  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: gestion_academica_frontend
+    ports:
+      - '3000:3000'
+    environment:
+      NEXT_PUBLIC_API_URL: http://backend:3001
+    depends_on:
+      - backend</code></div>
+      </div>
+    </div>
+
+  </section><!-- /pasos -->
+
+  <!-- ===== ERRORES COMUNES ===== -->
+  <section id="errores" class="section">
+    <h2 class="section-title"><i class="fas fa-bug"></i> Errores Comunes</h2>
+    <table class="data-table">
+      <thead><tr><th>Error</th><th>Causa probable</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>ECONNREFUSED 127.0.0.1:3001</code></td>
+          <td>El backend NestJS no está corriendo</td>
+          <td>Ejecutar <code>npm run start:dev</code> en <code>/backend</code>, verificar que el puerto 3001 esté libre</td>
+        </tr>
+        <tr>
+          <td><code>GET /api/v1/... failed: 404</code></td>
+          <td>La ruta del endpoint no coincide</td>
+          <td>Verificar el prefijo exacto en el controlador NestJS. El prefijo global es <code>api/v1</code></td>
+        </tr>
+        <tr>
+          <td>CORS error en el navegador</td>
+          <td>El backend no permite peticiones desde <code>localhost:3000</code></td>
+          <td>Verificar <code>app.enableCors</code> en <code>main.ts</code> del backend con <code>origin: 'http://localhost:3000'</code></td>
+        </tr>
+        <tr>
+          <td><code>json.data is undefined</code></td>
+          <td>El backend no devuelve el envoltorio <code>{ data: ... }</code></td>
+          <td>Verificar que el <code>ResponseInterceptor</code> esté registrado globalmente en <code>main.ts</code></td>
+        </tr>
+        <tr>
+          <td><code>usePathname() must be used in a Client Component</code></td>
+          <td>Falta <code>'use client'</code> al inicio del archivo</td>
+          <td>Agregar <code>'use client';</code> como primera línea de <code>Sidebar.tsx</code></td>
+        </tr>
+        <tr>
+          <td><code>Module not found: @/interfaces/...</code></td>
+          <td>El alias <code>@</code> no está configurado en <code>tsconfig.json</code></td>
+          <td>Verificar que <code>compilerOptions.paths</code> contenga <code>"@/*": ["./src/*"]</code></td>
+        </tr>
+        <tr>
+          <td>Los estilos Tailwind no aparecen</td>
+          <td><code>globals.css</code> no importado o <code>tailwind.config.ts</code> sin paths correctos</td>
+          <td>Importar <code>./globals.css</code> en <code>layout.tsx</code>. Verificar <code>content: ['./src/**/*.{ts,tsx}']</code> en la config de Tailwind</td>
+        </tr>
+        <tr>
+          <td><code>next build</code> falla con errores de tipo</td>
+          <td>Las interfaces no coinciden con la respuesta real de la API</td>
+          <td>Revisar la respuesta en el navegador (DevTools → Network) y ajustar los campos de la interfaz</td>
+        </tr>
+        <tr>
+          <td>Página en blanco al navegar</td>
+          <td>Error en el componente que no se muestra en pantalla</td>
+          <td>Abrir DevTools del navegador → consola → identificar el error de React o Next.js</td>
+        </tr>
+        <tr>
+          <td>Docker build falla: <code>.next/standalone not found</code></td>
+          <td>Falta <code>output: 'standalone'</code> en <code>next.config.ts</code></td>
+          <td>Agregar <code>output: 'standalone'</code> al objeto de configuración y hacer <code>npm run build</code> nuevamente</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip">
+      <strong><i class="fas fa-lightbulb"></i> Tip de depuración:</strong> Usa siempre las herramientas de desarrollo del navegador (F12) → pestaña <strong>Network</strong> para ver las peticiones HTTP reales, los status codes y el contenido de las respuestas del backend.
+    </div>
+  </section>
+
+  <!-- ===== GLOSARIO ===== -->
+  <section id="glosario" class="section">
+    <h2 class="section-title"><i class="fas fa-book"></i> Glosario</h2>
+    <table class="data-table">
+      <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+      <tbody>
+        <tr><td><strong>App Router</strong></td><td>Sistema de enrutamiento de Next.js 13+. Las carpetas dentro de <code>app/</code> definen rutas. Soporta layouts anidados y Server Components.</td></tr>
+        <tr><td><strong>Server Component</strong></td><td>Componente React que se renderiza en el servidor de Node.js. No tiene acceso a hooks del navegador (<code>useState</code>, <code>useEffect</code>). Modo por defecto en App Router.</td></tr>
+        <tr><td><strong>Client Component</strong></td><td>Componente que se renderiza en el navegador. Se declara con <code>'use client'</code>. Puede usar hooks, eventos y APIs del DOM.</td></tr>
+        <tr><td><strong>Route Group</strong></td><td>Carpeta con nombre entre paréntesis como <code>(dashboard)</code>. Agrupa rutas y layouts sin afectar la URL real.</td></tr>
+        <tr><td><strong>Barrel export</strong></td><td>Archivo <code>index.ts</code> que re-exporta múltiples módulos desde un único punto de entrada. Simplifica las importaciones.</td></tr>
+        <tr><td><strong>Tailwind CSS</strong></td><td>Framework CSS utility-first. Los estilos se aplican usando clases utilitarias directamente en el JSX en lugar de archivos <code>.css</code> separados.</td></tr>
+        <tr><td><strong>Generic TypeScript <code>&lt;T&gt;</code></strong></td><td>Parámetro de tipo que permite que una función trabaje con múltiples tipos manteniendo el tipado. <code>apiGet&lt;Estudiante[]&gt;</code> devuelve <code>Promise&lt;Estudiante[]&gt;</code>.</td></tr>
+        <tr><td><strong>Omit&lt;T, K&gt;</strong></td><td>Utilidad TypeScript que crea un nuevo tipo excluyendo las propiedades K de T. Usado para DTOs: <code>Omit&lt;Estudiante, 'id' | 'createdAt'&gt;</code>.</td></tr>
+        <tr><td><strong>Partial&lt;T&gt;</strong></td><td>Utilidad TypeScript que hace todas las propiedades opcionales. Usado para DTOs de actualización (PATCH / PUT parcial).</td></tr>
+        <tr><td><strong>HU (Historia de Usuario)</strong></td><td>Unidad de trabajo del backlog. En este proyecto cada HU corresponde a un módulo CRUD (HU-01: Estudiantes, HU-02: Docentes, etc.).</td></tr>
+        <tr><td><strong>Stub</strong></td><td>Implementación mínima temporal de una función o componente. Permite compilar el proyecto mientras se desarrolla la lógica real en los Sprint siguientes.</td></tr>
+        <tr><td><strong>CORS</strong></td><td>Política del navegador que bloquea peticiones HTTP entre dominios/puertos distintos. El backend debe permitir explícitamente <code>http://localhost:3000</code>.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div><!-- /container -->
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3><i class="fas fa-layer-group"></i> Frontend</h3>
+      <ul>
+        <li><a href="https://nextjs.org/docs" target="_blank" rel="noopener">Documentación Next.js 15</a></li>
+        <li><a href="https://react.dev" target="_blank" rel="noopener">React 19 — react.dev</a></li>
+        <li><a href="https://tailwindcss.com/docs" target="_blank" rel="noopener">Tailwind CSS Docs</a></li>
+        <li><a href="https://nextjs.org/docs/app/building-your-application/routing" target="_blank" rel="noopener">App Router Guide</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3><i class="fas fa-code"></i> TypeScript</h3>
+      <ul>
+        <li><a href="https://www.typescriptlang.org/docs/" target="_blank" rel="noopener">TypeScript Handbook</a></li>
+        <li><a href="https://www.typescriptlang.org/docs/handbook/utility-types.html" target="_blank" rel="noopener">Utility Types (Omit, Partial)</a></li>
+        <li><a href="https://nextjs.org/docs/app/building-your-application/configuring/typescript" target="_blank" rel="noopener">TypeScript en Next.js</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3><i class="fas fa-server"></i> Backend</h3>
+      <ul>
+        <li><a href="https://docs.nestjs.com" target="_blank" rel="noopener">NestJS Docs</a></li>
+        <li><a href="https://www.prisma.io/docs" target="_blank" rel="noopener">Prisma 7 Docs</a></li>
+        <li><a href="https://docs.docker.com" target="_blank" rel="noopener">Docker Docs</a></li>
+        <li><a href="https://www.postgresql.org/docs/" target="_blank" rel="noopener">PostgreSQL 16</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3><i class="fas fa-graduation-cap"></i> Proyecto</h3>
+      <ul>
+        <li>Programación Web — CORHUILA</li>
+        <li>Período Académico: 2026A</li>
+        <li>Stack: Next.js + NestJS + Prisma + Docker</li>
+        <li>Sistema de Gestión Académica</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    Guía Frontend — Sistema de Gestión Académica · Programación Web CORHUILA 2026A
+  </div>
+</footer>
+
+<script>
+  // Resalta enlace activo en la nav según scroll
+  const sections = document.querySelectorAll('section[id], div[id]');
+  const navLinks = document.querySelectorAll('.main-nav a');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + id) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(section => observer.observe(section));
+</script>
+</body>
+</html>

@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía Backend — Sistema de Gestión Académica</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --nestjs:#e0234e;--prisma:#2d3748;--pg:#336791;--docker:#2496ed;
+      --next:#0070f3;--success:#27ae60;--warning:#f39c12;--accent:#ff6b6b;--visual:#6f42c1;
+    }
+    body{font-family:'Roboto','Segoe UI',Arial,sans-serif;background:#f0f4fa;color:#222;line-height:1.6}
+    .main-header{background:linear-gradient(135deg,#1e3c72 0%,#2a5298 100%);color:white;padding:0}
+    .top-bar{padding:18px 40px 12px;text-align:center}
+    .brand-name{font-size:24px;font-weight:800;letter-spacing:.5px}
+    .brand-subtitle{font-size:13px;opacity:.85;margin-top:4px}
+    .main-nav{background:rgba(0,0,0,.25);position:sticky;top:0;z-index:100}
+    .main-nav ul{list-style:none;display:flex;flex-wrap:wrap;padding:0 16px;gap:0;justify-content:center}
+    .main-nav a{display:block;padding:10px 13px;color:rgba(255,255,255,.8);text-decoration:none;font-size:12px;font-weight:500;border-bottom:3px solid transparent;transition:background .2s}
+    .main-nav a:hover,.main-nav a.active{background:rgba(255,255,255,.15);color:white;border-bottom-color:var(--accent)}
+    .container{max-width:960px;margin:0 auto;padding:32px 16px}
+    .section{background:white;border-radius:12px;padding:28px 32px;margin-bottom:28px;box-shadow:0 2px 8px #0001}
+    .section:first-child{margin-top:0}
+    .section-title{font-size:20px;font-weight:700;color:#1e3c72;border-bottom:2px solid #e8f0ff;padding-bottom:10px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+    .section-title i{font-size:22px;color:var(--accent)}
+    .subsection-title{font-size:15px;font-weight:700;color:#2a5298;margin:20px 0 8px}
+    /* Cards */
+    .cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin:20px 0}
+    .card{border:1px solid #e0e0e0;border-radius:8px;padding:20px;background:#fff;transition:transform .3s,box-shadow .3s;box-shadow:0 2px 4px #0001}
+    .card:hover{transform:translateY(-4px);box-shadow:0 8px 16px rgba(0,0,0,.12)}
+    .card-icon{font-size:32px;margin-bottom:12px}
+    .card-title{font-size:15px;font-weight:600;margin-bottom:8px;color:#2c3e50}
+    .card p{font-size:13px;color:#555;line-height:1.5}
+    /* Guide Steps */
+    .guide-step{border-radius:10px;margin-bottom:22px;overflow:hidden;box-shadow:0 2px 8px #0001;border-left:5px solid #1e3c72}
+    .guide-step-header{display:flex;align-items:center;gap:18px;padding:14px 20px}
+    .guide-step-header.nest{background:linear-gradient(135deg,#a80026 0%,var(--nestjs) 100%)}
+    .guide-step-header.docker{background:linear-gradient(135deg,#1565a0 0%,var(--docker) 100%)}
+    .guide-step-header.pg{background:linear-gradient(135deg,#1a3d5c 0%,var(--pg) 100%)}
+    .guide-step-header.prisma{background:linear-gradient(135deg,#0d1117 0%,var(--prisma) 100%)}
+    .guide-step-header.ts{background:linear-gradient(135deg,#1565a0 0%,#3178c6 100%)}
+    .guide-step-header.test{background:linear-gradient(135deg,#1e7e34 0%,var(--success) 100%)}
+    .guide-step-header.folder{background:linear-gradient(135deg,#b7791f 0%,#d69e2e 100%)}
+    .guide-step-number{width:45px;height:45px;background:rgba(255,255,255,.2);border-radius:50%;color:white;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,.4)}
+    .guide-step-header-info h3{color:white;font-size:15px;font-weight:700;margin:0}
+    .guide-step-header-info p{color:rgba(255,255,255,.8);font-size:12px;margin:2px 0 0}
+    .guide-step-body{background:#fff;padding:22px 24px;border:1px solid #e8ecf0;border-top:none;border-radius:0 0 10px 10px}
+    /* Code Block */
+    .code-block{position:relative;margin:10px 0 16px;border-radius:8px;overflow:hidden;border-left:5px solid var(--accent);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+    .code-block code{display:block;background:#1e1e2e;color:#cdd6f4;padding:16px 18px;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre}
+    .code-label{display:inline-block;padding:3px 10px;border-radius:5px 5px 0 0;font-size:11px;font-weight:700;color:white;text-transform:uppercase}
+    .code-label.cli{background:#0d1117;border:1px solid #30363d}
+    .code-label.yaml{background:#cc3e44}
+    .code-label.env{background:#6f42c1}
+    .code-label.ts{background:#3178c6}
+    .code-label.prisma{background:var(--prisma)}
+    .code-label.json{background:#e67e22}
+    .code-label.output{background:#1e7e34}
+    .code-label.bash{background:#27ae60}
+    .code-label.sql{background:var(--pg)}
+    /* Instruction list */
+    .instruction-list{list-style:none;counter-reset:steps;padding:0}
+    .instruction-list li{counter-increment:steps;display:flex;gap:14px;margin-bottom:10px;align-items:flex-start;background:#f8f9fa;border-radius:8px;padding:12px 16px;border-left:3px solid var(--visual)}
+    .instruction-list li::before{content:counter(steps);min-width:28px;height:28px;background:var(--visual);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:1px}
+    .instruction-list li strong{color:#1e3c72}
+    .instruction-list li code{background:#e8e8e8;color:#1e3c72;padding:2px 6px;border-radius:4px;font-family:monospace;font-size:12px}
+    /* Info boxes */
+    .info-box{padding:14px 18px;border-radius:8px;margin:14px 0;font-size:14px}
+    .info-box.info{background:#d1ecf1;border-left:4px solid var(--docker)}
+    .info-box.warning{background:#fff3cd;border-left:4px solid var(--warning)}
+    .info-box.success{background:#d4edda;border-left:4px solid var(--success)}
+    .info-box.danger{background:#f8d7da;border-left:4px solid var(--nestjs)}
+    .info-box h4{font-size:13px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+    /* Tip */
+    .tip{background:linear-gradient(135deg,#e8f5e9 0%,#f1f8e9 100%);border-left:4px solid var(--success);padding:14px 18px;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px}
+    .tip strong{color:var(--success)}
+    /* Verify box */
+    .verify-box{background:linear-gradient(135deg,#f0fff4 0%,#f7fff9 100%);border:2px solid var(--success);border-radius:10px;padding:16px 20px;margin:14px 0}
+    .verify-box h4{color:var(--success);font-size:13px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px}
+    /* Tree block */
+    .tree-block{background:#fafbfc;border:1px solid #e0e0e0;border-left:4px solid var(--warning);border-radius:8px;padding:18px 22px;margin:16px 0;font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:13px;line-height:1.8;color:#2c3e50;white-space:pre;overflow-x:auto}
+    /* Tables */
+    .data-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+    .data-table thead th{background:#1e3c72;color:white;padding:10px 14px;text-align:left;font-weight:600}
+    .data-table tbody td{padding:9px 14px;border-bottom:1px solid #eef2fa}
+    .data-table tbody tr:nth-child(even){background:#f8faff}
+    .data-table tbody tr:hover{background:#e9ecef}
+    /* Badges */
+    .badge{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:12px;font-size:11px;font-weight:700;color:white;margin:2px}
+    .badge.nest{background:var(--nestjs)}
+    .badge.docker{background:var(--docker)}
+    .badge.pg{background:var(--pg)}
+    .badge.prisma{background:var(--prisma)}
+    .badge.ts{background:#3178c6}
+    .badge.next{background:var(--next)}
+    .badge.success,.badge.green{background:var(--success)}
+    .badge.warning,.badge.yellow{background:var(--warning);color:#333}
+    .badge.blue{background:#3498db}
+    .badge.purple{background:var(--visual)}
+    /* Architecture image */
+    .arch-img{width:100%;border-radius:10px;box-shadow:0 2px 12px #0002;display:block;margin:18px 0 8px}
+    /* Footer */
+    .footer{background:#1e3c72;color:white;padding:28px 40px;margin-top:28px}
+    .footer-content{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:32px}
+    .footer-section h3{font-size:14px;font-weight:700;margin-bottom:10px;border-bottom:1px solid rgba(255,255,255,.2);padding-bottom:6px;color:var(--accent)}
+    .footer-section ul{list-style:none}
+    .footer-section ul li{margin:6px 0;font-size:13px;color:rgba(255,255,255,.75)}
+    .footer-section a{color:#ccc;text-decoration:none;transition:color .3s}
+    .footer-section a:hover{color:white}
+    .footer-bottom{text-align:center;font-size:12px;color:rgba(255,255,255,.5);margin-top:18px;border-top:1px solid rgba(255,255,255,.15);padding-top:14px}
+    details{margin:10px 0}
+    summary{cursor:pointer;color:#2a5298;font-weight:600;font-size:13px;margin-bottom:6px}
+    @media(max-width:700px){.guide-step-header{flex-direction:column;text-align:center}.footer-content{grid-template-columns:1fr}.cards-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="main-header">
+  <div class="top-bar">
+    <div class="brand-name"><i class="fas fa-server"></i>&nbsp; Guía Backend — Sistema de Gestión Académica</div>
+    <div class="brand-subtitle">NestJS 10 · Prisma 7 · PostgreSQL 16 · Docker · Node.js 22 · TypeScript 5</div>
+  </div>
+  <nav class="main-nav">
+    <ul>
+      <li><a href="#intro">Introducción</a></li>
+      <li><a href="#arquitectura">Arquitectura</a></li>
+      <li><a href="#prerequisitos">Prerrequisitos</a></li>
+      <li><a href="#estructura">Estructura</a></li>
+      <li><a href="#paso1">1. Carpeta Raíz</a></li>
+      <li><a href="#paso2">2. NestJS CLI</a></li>
+      <li><a href="#paso3">3. Prisma + Deps</a></li>
+      <li><a href="#paso4">4. Prisma Config</a></li>
+      <li><a href="#paso5">5. Migración</a></li>
+      <li><a href="#paso6">6. PrismaModule</a></li>
+      <li><a href="#paso7">7. main.ts</a></li>
+      <li><a href="#paso8">8. Módulos CRUD</a></li>
+      <li><a href="#paso9">9. Build & Run</a></li>
+      <li><a href="#paso10">10. Verificar</a></li>
+      <li><a href="#endpoints">Endpoints</a></li>
+      <li><a href="#exploracion">Explorar BD</a></li>
+      <li><a href="#errores">Errores Comunes</a></li>
+      <li><a href="#glosario">Glosario</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main>
+<div class="container">
+
+  <!-- ===== INTRODUCCIÓN ===== -->
+  <section id="intro" class="section">
+    <h2 class="section-title"><i class="fas fa-rocket"></i> Introducción</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:14px">En esta guía vas a <strong>construir desde cero</strong> un backend profesional con API REST, base de datos relacional y ORM moderno. No se clona ningún repositorio: <strong>tú creas cada carpeta, archivo y configuración</strong> para entender qué hace cada pieza del sistema.</p>
+    <div class="info-box info">
+      <h4><i class="fas fa-bullseye"></i> ¿Qué vas a construir?</h4>
+      Un <strong>Sistema de Gestión Académica</strong> con 8 entidades (Programa Académico, Estudiante, Docente, Asignatura, Período, Asignación Docente, Matrícula y Calificación), una API REST con prefijo <code>/api/v1</code>, validación global, manejo de errores unificado e interceptor de respuestas.
+    </div>
+    <div class="info-box warning">
+      <h4><i class="fas fa-exclamation-triangle"></i> Nota</h4>
+      Esta guía corresponde al <strong>proyecto guiado por el docente</strong>. Tú debes adaptar los nombres, entidades y relaciones a <strong>tu proyecto específico</strong>.
+    </div>
+    <div class="cards-grid">
+      <div class="card" style="border-left:4px solid var(--nestjs)">
+        <div class="card-icon" style="color:var(--nestjs)"><i class="fab fa-node-js"></i></div>
+        <h4 class="card-title">Backend — NestJS 10</h4>
+        <p>Framework Node.js con TypeScript, inyección de dependencias, módulos, controladores y servicios. Expone una API REST en el puerto <strong>3001</strong>.</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--prisma)">
+        <div class="card-icon">◆</div>
+        <h4 class="card-title">ORM — Prisma 7</h4>
+        <p>ORM moderno para TypeScript. Gestiona el esquema, las migraciones y el acceso a datos. Requiere <strong>Driver Adapter</strong> (<code>PrismaPg</code>) en v7+.</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--pg)">
+        <div class="card-icon">🐘</div>
+        <h4 class="card-title">Base de Datos — PostgreSQL 16</h4>
+        <p>Motor relacional open-source. Corre en un contenedor Docker con datos persistentes en un volumen.</p>
+      </div>
+      <div class="card" style="border-left:4px solid var(--docker)">
+        <div class="card-icon" style="color:var(--docker)"><i class="fab fa-docker"></i></div>
+        <h4 class="card-title">Contenedores — Docker</h4>
+        <p>Ejecuta PostgreSQL de forma aislada sin instalar nada extra. Docker Compose orquesta todos los servicios.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ARQUITECTURA ===== -->
+  <section id="arquitectura" class="section">
+    <h2 class="section-title"><i class="fas fa-sitemap"></i> Arquitectura del Sistema</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:12px">El sistema sigue una arquitectura en capas donde el Navegador consume el Frontend (Next.js), que a su vez se comunica via REST con el Backend (NestJS). El Backend accede a PostgreSQL a través de Prisma ORM. Todo orquestado con Docker Compose.</p>
+    <img src="arquitectura-backend.svg" alt="Arquitectura del Sistema de Gestión Académica" class="arch-img">
+    <div class="info-box info">
+      <h4><i class="fas fa-route"></i> Flujo de comunicación</h4>
+      Navegador → <strong>Next.js :3000</strong> → REST <code>/api/v1</code> → <strong>NestJS :3001</strong> → Prisma ORM → <strong>PostgreSQL :5432</strong>
+    </div>
+  </section>
+
+  <!-- ===== PRERREQUISITOS ===== -->
+  <section id="prerequisitos" class="section">
+    <h2 class="section-title"><i class="fas fa-clipboard-check"></i> Prerrequisitos</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:16px">Instala las herramientas necesarias antes de comenzar.</p>
+    <table class="data-table">
+      <thead><tr><th>Herramienta</th><th>Versión</th><th>Instalación</th><th>Verificar</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge ts">Node.js</span></td><td>v22.x</td><td><code>winget install OpenJS.NodeJS.LTS</code></td><td><code>node --version</code></td></tr>
+        <tr><td><span class="badge ts">npm</span></td><td>v10.x</td><td>Incluido con Node.js</td><td><code>npm --version</code></td></tr>
+        <tr><td><span class="badge nest">NestJS CLI</span></td><td>v10.x</td><td><code>npm install -g @nestjs/cli</code></td><td><code>nest --version</code></td></tr>
+        <tr><td><span class="badge docker">Docker Desktop</span></td><td>v29.x</td><td><a href="#">docker.com/get-started</a></td><td><code>docker --version</code></td></tr>
+        <tr><td><span class="badge docker">Docker Compose</span></td><td>v2.x</td><td>Incluido en Docker Desktop</td><td><code>docker compose version</code></td></tr>
+      </tbody>
+    </table>
+    <div class="code-block"><span class="code-label cli">CLI</span><code># Verificar todas las herramientas de una vez:
+node --version       # → v22.21.0
+npm --version        # → 10.9.0
+nest --version       # → 10.x.x
+docker --version     # → Docker version 29.x.x
+docker compose version  # → Docker Compose version v2.x.x</code></div>
+  </section>
+
+  <!-- ===== ESTRUCTURA ===== -->
+  <section id="estructura" class="section">
+    <h2 class="section-title"><i class="fas fa-folder-open"></i> Estructura del Proyecto</h2>
+    <div class="code-block"><span class="code-label ts">TS</span><code>gestion-academica-sistema/
+├── .env                      ← Variables de entorno (raíz)
+├── docker-compose.yml        ← Orquestación de servicios Docker
+│
+├── backend/
+│   ├── src/
+│   │   ├── main.ts           ← Bootstrap de NestJS (prefijo api/v1)
+│   │   ├── app.module.ts     ← Módulo raíz (importa los 8 módulos)
+│   │   ├── prisma/
+│   │   │   ├── prisma.module.ts   ← Módulo Prisma (Global)
+│   │   │   └── prisma.service.ts  ← Servicio (PrismaPg adapter)
+│   │   ├── common/
+│   │   │   ├── filters/           ← HttpExceptionFilter
+│   │   │   └── interceptors/      ← ResponseInterceptor
+│   │   └── modules/
+│   │       ├── estudiantes/       ← controller · service · repository · dto
+│   │       ├── docentes/          ← controller · service · repository · dto
+│   │       ├── programas/         ← controller · service · repository · dto
+│   │       ├── asignaturas/       ← controller · service · repository · dto
+│   │       ├── periodos/          ← controller · service · repository · dto
+│   │       ├── asignaciones-docente/
+│   │       ├── matriculas/
+│   │       └── calificaciones/
+│   ├── prisma/
+│   │   ├── schema.prisma     ← Modelos de datos (8 entidades)
+│   │   └── migrations/       ← Historial de migraciones SQL
+│   ├── prisma.config.ts      ← Configuración Prisma 7 (datasource + adapter)
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── tsconfig.build.json
+│   ├── nest-cli.json
+│   └── Dockerfile
+│
+└── frontend/
+    ├── src/
+    │   ├── app/              ← App Router Next.js (8 páginas stub)
+    │   ├── components/       ← Sidebar, layout
+    │   ├── services/         ← 8 servicios HTTP (fetch api/v1)
+    │   ├── interfaces/       ← Tipos TypeScript
+    │   └── lib/api.ts        ← Cliente HTTP base
+    └── Dockerfile</code></div>
+  </section>
+
+  <!-- ===== PASO A PASO ===== -->
+  <section id="pasos" class="section">
+    <h2 class="section-title"><i class="fas fa-list-ol"></i> Paso a Paso</h2>
+
+    <!-- PASO 1 -->
+    <div id="paso1" class="guide-step">
+      <div class="guide-step-header folder">
+        <div class="guide-step-number">1</div>
+        <div class="guide-step-header-info">
+          <h3>Crear la carpeta raíz e inicializar el proyecto NestJS</h3>
+          <p>Estructura base del proyecto backend con NestJS CLI</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Crea la carpeta raíz</strong> del monorepo y entra en ella.</li>
+          <li><strong>Inicializa Git</strong> para versionar el proyecto desde el principio.</li>
+          <li><strong>Genera el proyecto NestJS</strong> usando la CLI con <code>--skip-git</code> (ya tienes un <code>.git</code> en la raíz). Esto crea <code>src/</code>, <code>package.json</code>, <code>tsconfig.json</code>, <code>nest-cli.json</code> y más.</li>
+          <li><strong>Selecciona npm</strong> como gestor de paquetes cuando el asistente lo pregunte.</li>
+        </ul>
+        <div class="code-block"><span class="code-label cli">CLI</span><code>mkdir gestion-academica-sistema
+cd gestion-academica-sistema
+
+# Inicializar repositorio Git
+git init
+
+# Crear el proyecto NestJS (--skip-git: no crea un .git nuevo)
+nest new backend --skip-git</code></div>
+
+        <h3 class="subsection-title">Crear <code>.gitignore</code> en la raíz</h3>
+        <div class="code-block"><span class="code-label bash">.gitignore</span><code># Dependencias
+node_modules/
+
+# Variables de entorno — NUNCA subir .env real a Git
+.env
+.env.local
+
+# Build outputs
+dist/
+.next/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db</code></div>
+
+        <h3 class="subsection-title">Crear <code>.env.example</code> en la raíz</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:8px">Este archivo documenta las variables del proyecto. Copia a <code>.env</code> y ajusta los valores localmente. <strong>Solo <code>.env.example</code> se sube a Git.</strong></p>
+        <div class="code-block"><span class="code-label env">.env.example</span><code># ============================================================
+# .env.example — Copiar a .env y ajustar valores locales
+# ============================================================
+
+# --- PostgreSQL ---
+DB_USER=admin
+DB_PASSWORD=admin123
+DB_NAME=gestion_academica_db
+
+# --- Backend (NestJS) ---
+DATABASE_URL=postgresql://admin:admin123@localhost:5432/gestion_academica_db
+PORT=3001
+NODE_ENV=development
+FRONTEND_URL=http://localhost:3000
+
+# --- Frontend (Next.js) ---
+NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1</code></div>
+
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Crea el <code>.env</code> real copiando el ejemplo: en Windows ejecuta <code>copy .env.example .env</code>. Este archivo no se sube a Git porque ya está en el <code>.gitignore</code>.
+        </div>
+
+        <h3 class="subsection-title">Estructura resultante</h3>
+        <div class="tree-block">gestion-academica-sistema/
+├── .gitignore
+├── .env.example
+├── .env               ← creado manualmente, NO va en Git
+└── backend/
+    ├── src/
+    │   ├── main.ts
+    │   ├── app.module.ts
+    │   ├── app.controller.ts
+    │   └── app.service.ts
+    ├── package.json
+    ├── tsconfig.json
+    ├── tsconfig.build.json
+    └── nest-cli.json</div>
+
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> ¿Qué hace <code>nest new</code>?</h4>
+          NestJS CLI genera un proyecto completo con Express por debajo, listo para TypeScript, con scripts de build, lint y test preconfigurados.
+        </div>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Verificación rápida</h4>
+          <div class="code-block" style="margin:8px 0 0 0"><span class="code-label cli">CLI — desde /backend</span><code>cd backend
+npm run start:dev
+# Debe mostrar:
+# [Nest] LOG [NestApplication] Nest application successfully started
+# Presiona Ctrl+C para detenerlo</code></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div id="paso2" class="guide-step">
+      <div class="guide-step-header docker">
+        <div class="guide-step-number">2</div>
+        <div class="guide-step-header-info">
+          <h3>Configurar Docker Compose y levantar PostgreSQL</h3>
+          <p>Base de datos PostgreSQL 16 en contenedor Docker</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Crea <code>docker-compose.yml</code></strong> en la raíz del proyecto con el servicio de base de datos.</li>
+          <li><strong>Crea <code>.env</code></strong> con las variables de entorno del proyecto.</li>
+          <li><strong>Levanta PostgreSQL</strong> en segundo plano con Docker Compose.</li>
+          <li><strong>Verifica</strong> que el contenedor esté sano.</li>
+        </ul>
+        <div class="code-block"><span class="code-label yaml">docker-compose.yml</span><code>services:
+  db:
+    image: postgres:16-alpine
+    container_name: gestion_academica_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DB_NAME}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:</code></div>
+        <div class="code-block"><span class="code-label env">.env (raíz)</span><code>DB_USER=admin
+DB_PASSWORD=admin123
+DB_NAME=gestion_academica_db
+DATABASE_URL=postgresql://admin:admin123@localhost:5432/gestion_academica_db
+PORT=3001
+FRONTEND_URL=http://localhost:3000</code></div>
+        <div class="code-block"><span class="code-label cli">CLI</span><code>docker compose up db -d
+docker ps   # Verifica que el estado sea "healthy"</code></div>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Verificación esperada</h4>
+          <code>gestion_academica_db ... Up ... (healthy)</code>
+        </div>
+        <h3 class="subsection-title">Comandos Docker frecuentes</h3>
+        <table class="data-table">
+          <thead><tr><th>Comando</th><th>¿Qué hace?</th></tr></thead>
+          <tbody>
+            <tr><td><code>docker compose up db -d</code></td><td>Inicia PostgreSQL en segundo plano</td></tr>
+            <tr><td><code>docker compose stop</code></td><td>Detiene los contenedores (datos conservados)</td></tr>
+            <tr><td><code>docker compose down</code></td><td>Detiene y elimina contenedores</td></tr>
+            <tr><td><code>docker compose down -v</code></td><td>Elimina contenedores <strong>y volúmenes</strong> (⚠️ borra datos)</td></tr>
+            <tr><td><code>docker compose logs db</code></td><td>Ve los logs de la base de datos</td></tr>
+            <tr><td><code>docker ps</code></td><td>Lista todos los contenedores activos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div id="paso3" class="guide-step">
+      <div class="guide-step-header prisma">
+        <div class="guide-step-number">3</div>
+        <div class="guide-step-header-info">
+          <h3>Instalar Prisma 7 y dependencias del backend</h3>
+          <p>ORM de nueva generación con driver adapter para PostgreSQL</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <div class="info-box warning">
+          <h4><i class="fas fa-exclamation-triangle"></i> Prisma 7 — Cambio importante</h4>
+          Prisma 7 ya no usa la propiedad <code>url</code> dentro del <code>datasource</code> en <code>schema.prisma</code>. La URL se configura en <code>prisma.config.ts</code> con <code>defineConfig</code> y requiere un <strong>driver adapter</strong> explícito.
+        </div>
+        <ul class="instruction-list">
+          <li><strong>Entra a la carpeta backend</strong> antes de instalar.</li>
+          <li><strong>Instala las dependencias</strong> de Prisma 7, el adaptador PostgreSQL y herramientas de validación.</li>
+        </ul>
+        <div class="code-block"><span class="code-label cli">CLI — desde /backend</span><code>cd backend
+npm install \
+  @prisma/client@^7.0.0 \
+  @prisma/adapter-pg@^7.0.0 \
+  pg@^8.11.0 \
+  dotenv \
+  @nestjs/config \
+  @nestjs/mapped-types@^2.0.5 \
+  class-validator@^0.14.0 \
+  class-transformer@^0.5.1
+
+npm install --save-dev prisma@^7.0.0 @types/pg@^8.11.0</code></div>
+        <table class="data-table">
+          <thead><tr><th>Paquete</th><th>Tipo</th><th>Propósito</th></tr></thead>
+          <tbody>
+            <tr><td><code>@prisma/client</code></td><td><span class="badge green">prod</span></td><td>Cliente ORM generado para acceder a la base de datos</td></tr>
+            <tr><td><code>@prisma/adapter-pg</code></td><td><span class="badge green">prod</span></td><td>Adaptador oficial de Prisma 7 para pg (requerido en v7+)</td></tr>
+            <tr><td><code>pg</code></td><td><span class="badge green">prod</span></td><td>Driver nativo de PostgreSQL para Node.js</td></tr>
+            <tr><td><code>dotenv</code></td><td><span class="badge green">prod</span></td><td>Carga variables .env (para prisma.config.ts)</td></tr>
+            <tr><td><code>@nestjs/config</code></td><td><span class="badge green">prod</span></td><td>Lee variables de .env e inyecta en módulos NestJS</td></tr>
+            <tr><td><code>@nestjs/mapped-types</code></td><td><span class="badge green">prod</span></td><td>Habilita <code>PartialType()</code> para DTOs de actualización</td></tr>
+            <tr><td><code>class-validator</code></td><td><span class="badge green">prod</span></td><td>Decoradores de validación para los DTOs</td></tr>
+            <tr><td><code>class-transformer</code></td><td><span class="badge green">prod</span></td><td>Transforma objetos planos en instancias de clase</td></tr>
+            <tr><td><code>prisma</code></td><td><span class="badge blue">dev</span></td><td>CLI de Prisma para migraciones y generate</td></tr>
+            <tr><td><code>@types/pg</code></td><td><span class="badge blue">dev</span></td><td>Tipos TypeScript del driver pg</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PASO 4 -->
+    <div id="paso4" class="guide-step">
+      <div class="guide-step-header prisma">
+        <div class="guide-step-number">4</div>
+        <div class="guide-step-header-info">
+          <h3>Configurar Prisma 7 — prisma.config.ts y schema.prisma</h3>
+          <p>Configuración del ORM, datasource y modelos de datos</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <h3 class="subsection-title">4.1 — Crear prisma.config.ts</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Este archivo reemplaza la propiedad <code>url</code> que existía dentro del <code>datasource</code> en versiones anteriores de Prisma.</p>
+        <div class="code-block"><span class="code-label ts">backend/prisma.config.ts</span><code>import path from 'node:path';
+import { defineConfig } from 'prisma/config';
+import { config } from 'dotenv';
+
+// Carga el .env desde la carpeta raíz (un nivel arriba de /backend)
+config({ path: path.join(__dirname, '..', '.env') });
+
+export default defineConfig({
+  schema: path.join('prisma', 'schema.prisma'),
+  datasource: {
+    url: process.env.DATABASE_URL as string,  // ← URL aquí, no en schema.prisma
+  },
+  migrate: {
+    async adapter() {
+      const { PrismaPg } = await import('@prisma/adapter-pg');
+      return new PrismaPg({ connectionString: process.env.DATABASE_URL as string });
+    },
+  },
+});</code></div>
+
+        <h3 class="subsection-title">4.2 — Excluir prisma.config.ts del build de TypeScript</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:10px">Como <code>prisma.config.ts</code> está fuera de <code>src/</code>, debes excluirlo del <code>rootDir</code> de TypeScript.</p>
+        <div class="code-block"><span class="code-label json">backend/tsconfig.build.json</span><code>{
+  "extends": "./tsconfig.json",
+  "exclude": ["node_modules", "test", "dist", "**/*spec.ts", "prisma.config.ts"]
+}</code></div>
+
+        <h3 class="subsection-title">4.3 — Crear el schema.prisma con los 8 modelos</h3>
+        <div class="info-box danger">
+          <h4>🚫 NO pongas <code>url = env("DATABASE_URL")</code> en schema.prisma (Prisma 7)</h4>
+          En Prisma 7 la URL va en <code>prisma.config.ts</code>. Si la pones en el schema, obtendrás un error de configuración.
+        </div>
+        <div class="code-block"><span class="code-label prisma">backend/prisma/schema.prisma</span><code>generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // ← Sin "url" aquí. La URL está en prisma.config.ts
+}
+
+model Estudiante {
+  id         Int               @id @default(autoincrement())
+  nombre     String
+  correo     String            @unique
+  programaId Int
+  programa   ProgramaAcademico @relation(fields: [programaId], references: [id])
+  matriculas Matricula[]
+}
+
+model Docente {
+  id           Int                 @id @default(autoincrement())
+  nombre       String
+  correo       String              @unique
+  asignaciones AsignacionDocente[]
+}
+
+model ProgramaAcademico {
+  id          Int          @id @default(autoincrement())
+  nombre      String       @unique
+  estudiantes Estudiante[]
+  asignaturas Asignatura[]
+}
+
+model Asignatura {
+  id           Int               @id @default(autoincrement())
+  nombre       String
+  programaId   Int
+  programa     ProgramaAcademico @relation(fields: [programaId], references: [id])
+  asignaciones AsignacionDocente[]
+}
+
+model PeriodoAcademico {
+  id           Int                 @id @default(autoincrement())
+  nombre       String              @unique
+  asignaciones AsignacionDocente[]
+}
+
+model AsignacionDocente {
+  id                 Int              @id @default(autoincrement())
+  docenteId          Int
+  docente            Docente          @relation(fields: [docenteId], references: [id])
+  asignaturaId       Int
+  asignatura         Asignatura       @relation(fields: [asignaturaId], references: [id])
+  periodoAcademicoId Int
+  periodo            PeriodoAcademico @relation(fields: [periodoAcademicoId], references: [id])
+  matriculas         Matricula[]
+  @@unique([docenteId, asignaturaId, periodoAcademicoId])
+}
+
+model Matricula {
+  id                  Int               @id @default(autoincrement())
+  estudianteId        Int
+  estudiante          Estudiante        @relation(fields: [estudianteId], references: [id])
+  asignacionDocenteId Int
+  asignacion          AsignacionDocente @relation(fields: [asignacionDocenteId], references: [id])
+  calificaciones      Calificacion[]
+  @@unique([estudianteId, asignacionDocenteId])
+}
+
+model Calificacion {
+  id          Int       @id @default(autoincrement())
+  matriculaId Int
+  matricula   Matricula @relation(fields: [matriculaId], references: [id])
+  valor       Float
+}</code></div>
+      </div>
+    </div>
+
+    <!-- PASO 5 -->
+    <div id="paso5" class="guide-step">
+      <div class="guide-step-header pg">
+        <div class="guide-step-number">5</div>
+        <div class="guide-step-header-info">
+          <h3>Ejecutar la primera migración y generar el cliente Prisma</h3>
+          <p>Crea las tablas en PostgreSQL y genera el cliente tipado</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Ejecuta la migración</strong> para crear las 8 tablas en la base de datos. Prisma genera un archivo SQL y lo aplica.</li>
+          <li><strong>Genera el cliente Prisma</strong> para que TypeScript conozca los tipos de tus modelos.</li>
+        </ul>
+        <div class="code-block"><span class="code-label cli">CLI — desde /backend</span><code>npx prisma migrate dev --name init
+npx prisma generate</code></div>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Resultado esperado de migrate dev</h4>
+          <code>Your database is now in sync with your schema.</code><br>
+          <code>Generated Prisma Client (v7.5.0)</code>
+        </div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> Diferencia entre migrate dev y migrate deploy</h4>
+          <code>migrate dev</code> — Desarrollo local: crea y aplica migraciones nuevas.<br>
+          <code>migrate deploy</code> — Producción: solo aplica migraciones ya existentes (usado en CI/CD y Docker).
+        </div>
+        <h3 class="subsection-title">Verificar las tablas creadas en PostgreSQL</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:8px">Puedes conectarte al contenedor y utilizar <code>psql</code> para confirmar que las 8 tablas fueron creadas correctamente:</p>
+        <div class="code-block"><span class="code-label sql">psql — verificación rápida BD</span><code># Conectarse a PostgreSQL dentro del contenedor
+docker exec -it gestion_academica_db psql -U admin -d gestion_academica_db
+
+# Dentro de psql, listar tablas:
+\dt
+
+# Debes ver las 8 tablas + la tabla de migraciones:
+#  calificacion        asignacion_docente
+#  estudiante          matricula
+#  docente             _prisma_migrations
+#  programa_academico
+#  asignatura
+#  periodo_academico
+
+# Contar registros en una tabla:
+SELECT COUNT(*) FROM estudiante;
+
+# Salir de psql:
+\q</code></div>
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip:</strong> Si el comando <code>docker exec</code> falla con "No such container", verifica que el contenedor esté arriba con <code>docker ps</code> y que el nombre coincida exactamente con el definido en <code>docker-compose.yml</code>. Consulta la sección <a href="#exploracion">Explorar BD</a> para ver todos los comandos de consola disponibles.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 6 -->
+    <div id="paso6" class="guide-step">
+      <div class="guide-step-header nest">
+        <div class="guide-step-number">6</div>
+        <div class="guide-step-header-info">
+          <h3>Configurar PrismaModule y PrismaService en NestJS</h3>
+          <p>Inyección de dependencias para acceder a la base de datos</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:12px">En NestJS, el acceso a la base de datos se centraliza en un <code>PrismaService</code> que extiende <code>PrismaClient</code> y es inyectado en todos los repositorios.</p>
+        <div class="code-block"><span class="code-label ts">src/prisma/prisma.service.ts</span><code>import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PrismaClient } from '@prisma/client';
+import { PrismaPg } from '@prisma/adapter-pg';
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  constructor() {
+    // Prisma 7 requiere pasar el adapter explícitamente
+    const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
+    super({ adapter });
+  }
+
+  async onModuleInit() {
+    await this.$connect();   // Conecta al iniciar el módulo
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect(); // Desconecta al destruir el módulo
+  }
+}</code></div>
+        <div class="code-block"><span class="code-label ts">src/prisma/prisma.module.ts</span><code>import { Global, Module } from '@nestjs/common';
+import { PrismaService } from './prisma.service';
+
+@Global()   // ← Disponible en todos los módulos sin importarlo individualmente
+@Module({
+  providers: [PrismaService],
+  exports: [PrismaService],
+})
+export class PrismaModule {}</code></div>
+      </div>
+    </div>
+
+    <!-- PASO 7 -->
+    <div id="paso7" class="guide-step">
+      <div class="guide-step-header nest">
+        <div class="guide-step-number">7</div>
+        <div class="guide-step-header-info">
+          <h3>Configurar main.ts — Prefijo global, CORS, Pipes y Filtros</h3>
+          <p>Bootstrap de la aplicación NestJS con configuración global</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <div class="code-block"><span class="code-label ts">src/main.ts</span><code>import { NestFactory } from '@nestjs/core';
+import { ValidationPipe } from '@nestjs/common';
+import { AppModule } from './app.module';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+
+  // Prefijo global para todas las rutas
+  app.setGlobalPrefix('api/v1');
+
+  // CORS: permite que el frontend consuma la API
+  app.enableCors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  // Validación automática de DTOs con class-validator
+  app.useGlobalPipes(
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }),
+  );
+
+  // Respuestas de error y respuestas de éxito unificadas
+  app.useGlobalFilters(new HttpExceptionFilter());
+  app.useGlobalInterceptors(new ResponseInterceptor());
+
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`🚀 Backend corriendo en: http://localhost:${port}/api/v1`);
+}
+bootstrap();</code></div>
+      </div>
+    </div>
+
+    <!-- PASO 8 -->
+    <div id="paso8" class="guide-step">
+      <div class="guide-step-header nest">
+        <div class="guide-step-number">8</div>
+        <div class="guide-step-header-info">
+          <h3>Estructura de un Módulo CRUD (ejemplo: Estudiantes)</h3>
+          <p>Patrón Controller → Service → Repository aplicado a cada entidad</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <p style="font-size:13px;color:#555;margin-bottom:12px">Cada uno de los 8 módulos sigue la misma arquitectura en 3 capas. Aquí el ejemplo con <strong>Estudiantes</strong>.</p>
+        <div class="code-block"><span class="code-label ts">src/modules/estudiantes/dto/create-estudiante.dto.ts</span><code>import { IsString, IsEmail, IsInt } from 'class-validator';
+
+export class CreateEstudianteDto {
+  @IsString()
+  nombre: string;
+
+  @IsEmail()
+  correo: string;
+
+  @IsInt()
+  programaId: number;
+}</code></div>
+        <div class="code-block"><span class="code-label ts">src/modules/estudiantes/estudiantes.controller.ts</span><code>import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { EstudiantesService } from './estudiantes.service';
+import { CreateEstudianteDto } from './dto/create-estudiante.dto';
+import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
+
+@Controller('estudiantes')
+export class EstudiantesController {
+  constructor(private readonly service: EstudiantesService) {}
+
+  @Get()    findAll()                              { return this.service.findAll(); }
+  @Get(':id') findOne(@Param('id') id: string)    { return this.service.findOne(+id); }
+  @Post()   create(@Body() dto: CreateEstudianteDto) { return this.service.create(dto); }
+  @Put(':id') update(@Param('id') id: string, @Body() dto: UpdateEstudianteDto) {
+    return this.service.update(+id, dto);
+  }
+  @Delete(':id') remove(@Param('id') id: string) { return this.service.remove(+id); }
+}</code></div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> El mismo patrón se repite para los 8 módulos</h4>
+          docentes · programas · asignaturas · periodos · asignaciones-docente · matriculas · calificaciones
+        </div>
+
+        <h3 class="subsection-title">Generar los 8 módulos con la CLI de NestJS</h3>
+        <p style="font-size:13px;color:#555;margin-bottom:8px">En lugar de crear cada archivo a mano, usa <code>nest generate</code> para que la CLI cree automáticamente el módulo, controlador y servicio de cada entidad:</p>
+        <div class="code-block"><span class="code-label cli">CLI — desde /backend</span><code># --- 1. Estudiantes ---
+nest generate module modules/estudiantes --no-spec
+nest generate controller modules/estudiantes --no-spec
+nest generate service modules/estudiantes --no-spec
+
+# --- 2. Docentes ---
+nest generate module modules/docentes --no-spec
+nest generate controller modules/docentes --no-spec
+nest generate service modules/docentes --no-spec
+
+# --- 3. Programas ---
+nest generate module modules/programas --no-spec
+nest generate controller modules/programas --no-spec
+nest generate service modules/programas --no-spec
+
+# --- 4. Asignaturas ---
+nest generate module modules/asignaturas --no-spec
+nest generate controller modules/asignaturas --no-spec
+nest generate service modules/asignaturas --no-spec
+
+# --- 5. Periodos ---
+nest generate module modules/periodos --no-spec
+nest generate controller modules/periodos --no-spec
+nest generate service modules/periodos --no-spec
+
+# --- 6. Asignaciones Docente ---
+nest generate module modules/asignaciones-docente --no-spec
+nest generate controller modules/asignaciones-docente --no-spec
+nest generate service modules/asignaciones-docente --no-spec
+
+# --- 7. Matrículas ---
+nest generate module modules/matriculas --no-spec
+nest generate controller modules/matriculas --no-spec
+nest generate service modules/matriculas --no-spec
+
+# --- 8. Calificaciones ---
+nest generate module modules/calificaciones --no-spec
+nest generate controller modules/calificaciones --no-spec
+nest generate service modules/calificaciones --no-spec</code></div>
+        <div class="tip">
+          <strong><i class="fas fa-lightbulb"></i> Tip:</strong> El flag <code>--no-spec</code> evita que se generen archivos de test (<code>.spec.ts</code>). La CLI también actualiza automáticamente <code>app.module.ts</code> para importar cada módulo nuevo.
+        </div>
+
+        <h3 class="subsection-title">Estructura resultante de src/</h3>
+        <div class="tree-block">backend/src/
+├── common/
+│   ├── filters/
+│   │   └── http-exception.filter.ts
+│   └── interceptors/
+│       └── response.interceptor.ts
+├── prisma/
+│   ├── prisma.module.ts
+│   └── prisma.service.ts
+├── modules/
+│   ├── estudiantes/
+│   │   ├── dto/
+│   │   │   ├── create-estudiante.dto.ts
+│   │   │   └── update-estudiante.dto.ts
+│   │   ├── estudiantes.controller.ts
+│   │   ├── estudiantes.module.ts
+│   │   ├── estudiantes.repository.ts
+│   │   └── estudiantes.service.ts
+│   ├── docentes/             ← mismo patrón
+│   ├── programas/            ← mismo patrón
+│   ├── asignaturas/          ← mismo patrón
+│   ├── periodos/             ← mismo patrón
+│   ├── asignaciones-docente/ ← mismo patrón
+│   ├── matriculas/           ← mismo patrón
+│   └── calificaciones/       ← mismo patrón
+├── app.module.ts             ← importa los 8 módulos automáticamente
+└── main.ts</div>
+      </div>
+    </div>
+
+    <!-- PASO 9 -->
+    <div id="paso9" class="guide-step">
+      <div class="guide-step-header nest">
+        <div class="guide-step-number">9</div>
+        <div class="guide-step-header-info">
+          <h3>Compilar y levantar el backend</h3>
+          <p>Build de producción y arranque del servidor NestJS</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <ul class="instruction-list">
+          <li><strong>Limpia el caché de compilación incremental</strong> (evita errores por archivos huérfanos de TSC).</li>
+          <li><strong>Compila el proyecto</strong> con TypeScript mediante el build del NestJS CLI.</li>
+          <li><strong>Inicia el servidor</strong> apuntando al archivo compilado.</li>
+        </ul>
+        <div class="code-block"><span class="code-label cli">CLI — desde /backend</span><code># 1. Limpiar caché de compilación incremental
+Remove-Item tsconfig.*.tsbuildinfo -ErrorAction SilentlyContinue
+
+# 2. Compilar
+npx tsc -p tsconfig.build.json
+
+# 3. Iniciar el servidor con variables de entorno
+$env:DATABASE_URL="postgresql://admin:admin123@localhost:5432/gestion_academica_db"
+$env:PORT="3001"
+node dist/main.js</code></div>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Resultado esperado en consola</h4>
+          <code>🚀 Backend corriendo en: http://localhost:3001/api/v1</code>
+        </div>
+        <div class="info-box info">
+          <h4><i class="fas fa-info-circle"></i> Modo desarrollo vs. producción</h4>
+          Para desarrollo activo con recarga automática usa <code>npm run start:dev</code> (no requiere compilar manualmente). Para producción, usa el flujo de <code>tsc</code> + <code>node dist/main.js</code> que se muestra arriba.
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 10 -->
+    <div id="paso10" class="guide-step">
+      <div class="guide-step-header test">
+        <div class="guide-step-number">10</div>
+        <div class="guide-step-header-info">
+          <h3>Verificar los endpoints con curl o navegador</h3>
+          <p>Probar los 8 endpoints REST del backend</p>
+        </div>
+      </div>
+      <div class="guide-step-body">
+        <div class="code-block"><span class="code-label cli">PowerShell</span><code># Probar todos los endpoints de un solo golpe:
+$endpoints = @("estudiantes","docentes","programas","asignaturas",
+               "periodos","asignaciones-docente","matriculas","calificaciones")
+
+foreach ($ep in $endpoints) {
+  $r = Invoke-RestMethod -Uri "http://localhost:3001/api/v1/$ep" -Method GET
+  Write-Output "✅ $ep → $($r.statusCode)"
+}</code></div>
+        <div class="verify-box">
+          <h4><i class="fas fa-check-circle"></i> Salida esperada</h4>
+          <code>✅ estudiantes → 200<br>✅ docentes → 200<br>✅ programas → 200<br>... (todos los 8)</code>
+        </div>
+        <div class="code-block"><span class="code-label output">Respuesta JSON estándar</span><code>{
+  "statusCode": 200,
+  "message": "OK",
+  "data": []
+}</code></div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ===== ENDPOINTS ===== -->
+  <section id="endpoints" class="section">
+    <h2 class="section-title"><i class="fas fa-plug"></i> Tabla de Endpoints</h2>
+    <table class="data-table">
+      <thead><tr><th>Módulo</th><th>GET /lista</th><th>GET /:id</th><th>POST</th><th>PUT /:id</th><th>DELETE /:id</th></tr></thead>
+      <tbody>
+        <tr><td>👨‍🎓 Estudiantes</td><td>/api/v1/estudiantes</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>👨‍🏫 Docentes</td><td>/api/v1/docentes</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>🏫 Programas</td><td>/api/v1/programas</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>📚 Asignaturas</td><td>/api/v1/asignaturas</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>📅 Periodos</td><td>/api/v1/periodos</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>🔗 Asignaciones</td><td>/api/v1/asignaciones-docente</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>📋 Matrículas</td><td>/api/v1/matriculas</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+        <tr><td>🎯 Calificaciones</td><td>/api/v1/calificaciones</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== ERRORES COMUNES ===== -->
+  <section id="errores" class="section">
+    <h2 class="section-title"><i class="fas fa-bug"></i> Errores Comunes y Soluciones</h2>
+    <table class="data-table">
+      <thead><tr><th>Error</th><th>Causa probable</th><th>Solución</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><code>Cannot find module '@prisma/client'</code></td>
+          <td>No se ejecutó <code>prisma generate</code></td>
+          <td>Ejecuta <code>npx prisma generate</code> desde <code>/backend</code></td>
+        </tr>
+        <tr>
+          <td><code>P1001: Can't reach database server</code></td>
+          <td>PostgreSQL no está corriendo</td>
+          <td>Ejecuta <code>docker compose up db -d</code> y verifica con <code>docker ps</code></td>
+        </tr>
+        <tr>
+          <td><code>error during connect: ... docker daemon is not running</code></td>
+          <td>Docker Desktop no está abierto</td>
+          <td>Abre Docker Desktop desde el menú de inicio y espera el ícono de la ballena</td>
+        </tr>
+        <tr>
+          <td><code>url is required in datasource block</code></td>
+          <td>Usando Prisma 7 con URL en schema.prisma</td>
+          <td>Quita <code>url = env("DATABASE_URL")</code> del schema y usa <code>prisma.config.ts</code></td>
+        </tr>
+        <tr>
+          <td><code>Cannot find module 'dist/main.js'</code></td>
+          <td>El proyecto no fue compilado</td>
+          <td>Ejecuta <code>npx tsc -p tsconfig.build.json</code> primero</td>
+        </tr>
+        <tr>
+          <td><code>EADDRINUSE: address already in use :::3001</code></td>
+          <td>Otro proceso usa el puerto 3001</td>
+          <td>Cierra el proceso con <code>Stop-Process -Id (netstat -ano | Select-String ":3001"...)</code> o cambia el <code>PORT</code> en <code>.env</code></td>
+        </tr>
+        <tr>
+          <td><code>HttpException: Unprocessable Entity</code></td>
+          <td>DTO de validación fallando (<code>class-validator</code>)</td>
+          <td>Revisa que el body enviado tenga todos los campos requeridos con los tipos correctos</td>
+        </tr>
+        <tr>
+          <td><code>TypeError: Class constructor PrismaClient cannot be invoked without 'new'</code></td>
+          <td>Problema con <code>emitDecoratorMetadata</code> o imports del adaptador</td>
+          <td>Verifica que <code>tsconfig.json</code> tenga <code>"emitDecoratorMetadata": true</code> y <code>"experimentalDecorators": true</code></td>
+        </tr>
+        <tr>
+          <td><code>Migration engine failed (migration drift)</code></td>
+          <td>La BD tiene datos que contradicen el nuevo schema</td>
+          <td>En desarrollo ejecuta <code>npx prisma migrate reset</code> para reiniciar (⚠️ elimina datos)</td>
+        </tr>
+        <tr>
+          <td>CORS error en el navegador</td>
+          <td>El frontend no está en la lista de orígenes permitidos</td>
+          <td>Verifica <code>FRONTEND_URL</code> en <code>.env</code> y que <code>app.enableCors()</code> lo use en <code>main.ts</code></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip">
+      <strong><i class="fas fa-lightbulb"></i> Tip general:</strong> Cuando encuentres un error desconocido, busca el código de error (e.g. <code>P1001</code>, <code>P2002</code>) en la documentación oficial de Prisma: <strong>prisma.io/docs/reference/api-reference/error-reference</strong>
+    </div>
+  </section>
+
+  <!-- ===== GLOSARIO ===== -->
+  <section id="glosario" class="section">
+    <h2 class="section-title"><i class="fas fa-book"></i> Glosario de Conceptos</h2>
+    <table class="data-table">
+      <thead><tr><th>Concepto</th><th>Descripción</th></tr></thead>
+      <tbody>
+        <tr><td><span class="badge nest">NestJS</span></td><td>Framework backend Node.js modular y escalable, basado en TypeScript y Express.</td></tr>
+        <tr><td><span class="badge prisma">Prisma ORM</span></td><td>Mapeo objeto-relacional de nueva generación para TypeScript/Node.js. Genera un cliente tipado a partir del schema.</td></tr>
+        <tr><td><span class="badge pg">PostgreSQL</span></td><td>Motor de base de datos relacional open source, potente y ampliamente usado en producción.</td></tr>
+        <tr><td><span class="badge docker">Docker</span></td><td>Plataforma de contenerización que garantiza que la base de datos corra igual en todos los entornos.</td></tr>
+        <tr><td><span class="badge ts">Módulo NestJS</span></td><td>Unidad de organización de código. Agrupa controller, service y repository de una entidad.</td></tr>
+        <tr><td><span class="badge ts">DTO</span></td><td>Data Transfer Object — Clase TypeScript con decoradores que valida los datos de entrada de una petición HTTP.</td></tr>
+        <tr><td><span class="badge ts">Migración</span></td><td>Script SQL versionado que aplica cambios al esquema de la base de datos de forma controlada.</td></tr>
+        <tr><td><span class="badge ts">Driver Adapter</span></td><td>Capa intermedia requerida por Prisma 7+ que conecta el ORM con el driver nativo de la base de datos (<code>pg</code>).</td></tr>
+        <tr><td><span class="badge ts">GlobalPrefix</span></td><td>Prefijo que NestJS antepone a todas las rutas. Aquí es <code>api/v1</code>.</td></tr>
+        <tr><td><span class="badge ts">ValidationPipe</span></td><td>Pipe global de NestJS que valida automáticamente el body de las peticiones contra los DTOs definidos.</td></tr>
+        <tr><td><span class="badge ts">Interceptor</span></td><td>Capa que transforma la respuesta de todos los endpoints al formato estándar: <code>{statusCode, message, data}</code>.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ===== EXPLORAR LA BASE DE DATOS ===== -->
+  <section id="exploracion" class="section">
+    <h2 class="section-title"><i class="fas fa-database"></i> Explorar la Base de Datos por Consola</h2>
+    <p style="font-size:14px;color:#555;margin-bottom:14px">Conectarse directamente a PostgreSQL desde la terminal es una habilidad esencial para verificar datos, depurar migraciones y entender el estado real de la base de datos. Todas las instrucciones siguientes asumen que el contenedor Docker está activo.</p>
+
+    <!-- CONECTARSE -->
+    <h3 class="subsection-title">1. Conectarse al contenedor</h3>
+    <div class="code-block"><span class="code-label sql">Conectar al contenedor</span><code># Abrir sesión psql dentro del contenedor Docker
+docker exec -it gestion_academica_db psql -U admin -d gestion_academica_db
+
+# Forma alternativa: solo abrir bash del contenedor
+docker exec -it gestion_academica_db bash
+# y luego dentro del bash:
+psql -U admin -d gestion_academica_db</code></div>
+    <div class="verify-box">
+      <h4><i class="fas fa-check-circle"></i> Prompt esperado al conectarse</h4>
+      <code>psql (16.x)</code><br>
+      <code>Type "help" for help.</code><br><br>
+      <code>gestion_academica_db=#</code>
+    </div>
+
+    <!-- META-COMANDOS -->
+    <h3 class="subsection-title">2. Meta-comandos de psql (comienzan con \)</h3>
+    <p style="font-size:13px;color:#555;margin-bottom:8px">Los meta-comandos son atajos propios de <code>psql</code> — no son SQL, son instrucciones para el cliente de consola.</p>
+    <table class="data-table">
+      <thead><tr><th>Comando</th><th>¿Qué hace?</th><th>Ejemplo</th></tr></thead>
+      <tbody>
+        <tr><td><code>\l</code></td><td>Lista todas las bases de datos del servidor</td><td><code>\l</code></td></tr>
+        <tr><td><code>\c [base]</code></td><td>Cambia de base de datos activa</td><td><code>\c gestion_academica_db</code></td></tr>
+        <tr><td><code>\dt</code></td><td>Lista todas las tablas del esquema actual</td><td><code>\dt</code></td></tr>
+        <tr><td><code>\dt *.* </code></td><td>Lista tablas de todos los esquemas</td><td><code>\dt *.*</code></td></tr>
+        <tr><td><code>\d [tabla]</code></td><td>Describe la estructura de una tabla (columnas, tipos, constraints)</td><td><code>\d estudiante</code></td></tr>
+        <tr><td><code>\d+ [tabla]</code></td><td>Descripción extendida (incluye comentarios y tamaño)</td><td><code>\d+ matricula</code></td></tr>
+        <tr><td><code>\di</code></td><td>Lista todos los índices de la base de datos</td><td><code>\di</code></td></tr>
+        <tr><td><code>\dn</code></td><td>Lista los esquemas (namespaces) disponibles</td><td><code>\dn</code></td></tr>
+        <tr><td><code>\du</code></td><td>Lista los roles/usuarios de PostgreSQL</td><td><code>\du</code></td></tr>
+        <tr><td><code>\conninfo</code></td><td>Muestra información de la conexión actual (host, BD, usuario)</td><td><code>\conninfo</code></td></tr>
+        <tr><td><code>\x</code></td><td>Activa/desactiva modo expandido (resultados en formato vertical)</td><td><code>\x</code> luego <code>SELECT * FROM docente;</code></td></tr>
+        <tr><td><code>\timing</code></td><td>Activa/desactiva el tiempo de ejecución de cada consulta</td><td><code>\timing</code></td></tr>
+        <tr><td><code>\e</code></td><td>Abre el editor por defecto para escribir consultas largas</td><td><code>\e</code></td></tr>
+        <tr><td><code>\i [archivo]</code></td><td>Ejecuta un archivo SQL externo</td><td><code>\i /tmp/seed.sql</code></td></tr>
+        <tr><td><code>\q</code></td><td>Cierra la sesión psql y regresa a la shell</td><td><code>\q</code></td></tr>
+        <tr><td><code>\?</code></td><td>Muestra la ayuda de todos los meta-comandos</td><td><code>\?</code></td></tr>
+        <tr><td><code>\h [comando]</code></td><td>Muestra la ayuda de un comando SQL específico</td><td><code>\h SELECT</code></td></tr>
+      </tbody>
+    </table>
+
+    <!-- EXPLORAR ESTRUCTURA -->
+    <h3 class="subsection-title">3. Explorar la estructura del esquema</h3>
+    <div class="code-block"><span class="code-label sql">psql — estructura</span><code>-- Listar todas las tablas y su propietario
+\dt
+
+-- Describir la tabla estudiante (columnas, tipos, NOT NULL, default)
+\d estudiante
+
+-- Describir la tabla con sus índices y restricciones detalladas
+\d+ calificacion
+
+-- Ver todas las columnas de todas las tablas en el esquema public
+SELECT table_name, column_name, data_type, is_nullable
+FROM information_schema.columns
+WHERE table_schema = 'public'
+ORDER BY table_name, ordinal_position;
+
+-- Listar todas las restricciones de clave foránea (foreign keys)
+SELECT
+  tc.table_name,
+  kcu.column_name,
+  ccu.table_name  AS tabla_referenciada,
+  ccu.column_name AS columna_referenciada
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+  ON tc.constraint_name = kcu.constraint_name
+JOIN information_schema.constraint_column_usage AS ccu
+  ON ccu.constraint_name = tc.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY';
+
+-- Ver los índices de una tabla específica
+\di matricula*</code></div>
+
+    <!-- EXPLORAR DATOS -->
+    <h3 class="subsection-title">4. Consultar datos con SQL</h3>
+    <div class="code-block"><span class="code-label sql">psql — consultas de datos</span><code>-- Ver todos los registros de una tabla (máx 20)
+SELECT * FROM estudiante LIMIT 20;
+
+-- Contar registros de cada tabla
+SELECT 'estudiante'        AS tabla, COUNT(*) FROM estudiante
+UNION ALL
+SELECT 'docente',                    COUNT(*) FROM docente
+UNION ALL
+SELECT 'programa_academico',         COUNT(*) FROM programa_academico
+UNION ALL
+SELECT 'asignatura',                 COUNT(*) FROM asignatura
+UNION ALL
+SELECT 'periodo_academico',          COUNT(*) FROM periodo_academico
+UNION ALL
+SELECT 'asignacion_docente',         COUNT(*) FROM asignacion_docente
+UNION ALL
+SELECT 'matricula',                  COUNT(*) FROM matricula
+UNION ALL
+SELECT 'calificacion',               COUNT(*) FROM calificacion;
+
+-- Buscar un registro por ID
+SELECT * FROM estudiante WHERE id = 1;
+
+-- Ver los últimos 5 registros insertados
+SELECT * FROM estudiante ORDER BY id DESC LIMIT 5;</code></div>
+
+    <!-- CONSULTAS CON JOINS -->
+    <h3 class="subsection-title">5. Consultas con JOIN entre tablas</h3>
+    <div class="code-block"><span class="code-label sql">psql — JOINs útiles</span><code>-- Estudiante con su programa académico
+SELECT e.id, e.nombre, e.correo, p.nombre AS programa
+FROM estudiante e
+JOIN programa_academico p ON e."programaId" = p.id;
+
+-- Matrículas con nombre de estudiante y asignación
+SELECT
+  m.id AS matricula_id,
+  e.nombre AS estudiante,
+  d.nombre AS docente,
+  a.nombre AS asignatura,
+  per.nombre AS periodo
+FROM matricula m
+JOIN estudiante e          ON m."estudianteId" = e.id
+JOIN asignacion_docente ad ON m."asignacionDocenteId" = ad.id
+JOIN docente d             ON ad."docenteId" = d.id
+JOIN asignatura a          ON ad."asignaturaId" = a.id
+JOIN periodo_academico per ON ad."periodoAcademicoId" = per.id;
+
+-- Calificaciones de un estudiante específico
+SELECT
+  e.nombre AS estudiante,
+  a.nombre AS asignatura,
+  c.valor  AS nota
+FROM calificacion c
+JOIN matricula m  ON c."matriculaId" = m.id
+JOIN estudiante e ON m."estudianteId" = e.id
+JOIN asignacion_docente ad ON m."asignacionDocenteId" = ad.id
+JOIN asignatura a ON ad."asignaturaId" = a.id
+WHERE e.id = 1;</code></div>
+
+    <!-- MODO EXPANDIDO -->
+    <h3 class="subsection-title">6. Modo expandido para ver filas largas</h3>
+    <div class="code-block"><span class="code-label sql">psql — modo expandido</span><code>-- Activar modo expandido (\x) para ver columnas en vertical
+\x
+
+SELECT * FROM asignacion_docente LIMIT 3;
+-- La salida aparece así en vez de tabla horizontal:
+-- -[ RECORD 1 ]--+--------
+-- id             | 1
+-- docenteId      | 2
+-- asignaturaId   | 1
+-- periodoAcademicoId | 1
+
+-- Desactivar modo expandido:
+\x</code></div>
+
+    <!-- HISTORIAL Y AYUDA -->
+    <h3 class="subsection-title">7. Historial y utilidades adicionales</h3>
+    <div class="code-block"><span class="code-label sql">psql — utilidades</span><code>-- Ver el historial de comandos ejecutados
+\s
+
+-- Guardar el resultado de una consulta en un archivo
+\o /tmp/resultado.txt
+SELECT * FROM estudiante;
+\o          -- desactiva la redirección
+
+-- Ver información de la conexión activa
+\conninfo
+-- Salida: You are connected to database "gestion_academica_db"
+--         as user "admin" on host "localhost" at port "5432".
+
+-- Limpiar la pantalla (solo Linux/Mac dentro del contenedor)
+\! clear
+
+-- Salir de psql
+\q</code></div>
+
+    <div class="info-box info">
+      <h4><i class="fas fa-info-circle"></i> Nota sobre las comillas en PostgreSQL</h4>
+      Prisma genera nombres de columnas en <strong>camelCase</strong> (ej: <code>programaId</code>). En PostgreSQL, los identificadores <em>case-sensitive</em> deben ir entre comillas dobles: <code>"programaId"</code>. Sin comillas, PostgreSQL los convierte a minúsculas y no encontrará la columna.
+    </div>
+    <div class="tip">
+      <strong><i class="fas fa-lightbulb"></i> Tip — Acceso rápido desde PowerShell:</strong> Puedes ejecutar una consulta SQL directamente sin entrar a la sesión interactiva:<br>
+      <code>docker exec gestion_academica_db psql -U admin -d gestion_academica_db -c "SELECT * FROM estudiante;"</code>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-section">
+      <h3>🔧 Stack tecnológico</h3>
+      <ul>
+        <li><a href="https://nodejs.org" target="_blank" rel="noopener">Node.js v22.x</a></li>
+        <li><a href="https://docs.nestjs.com" target="_blank" rel="noopener">NestJS v10.x</a></li>
+        <li><a href="https://www.prisma.io/docs" target="_blank" rel="noopener">Prisma ORM v7.x</a></li>
+        <li><a href="https://hub.docker.com/_/postgres" target="_blank" rel="noopener">PostgreSQL 16 (Alpine)</a></li>
+        <li><a href="https://www.docker.com" target="_blank" rel="noopener">Docker v29.x</a></li>
+        <li><a href="https://www.typescriptlang.org" target="_blank" rel="noopener">TypeScript v5</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>📦 Dependencias clave</h3>
+      <ul>
+        <li><a href="https://www.npmjs.com/package/@prisma/adapter-pg" target="_blank" rel="noopener">@prisma/adapter-pg v7.x</a></li>
+        <li><a href="https://www.npmjs.com/package/@nestjs/mapped-types" target="_blank" rel="noopener">@nestjs/mapped-types v2.x</a></li>
+        <li><a href="https://github.com/typestack/class-validator" target="_blank" rel="noopener">class-validator v0.14</a></li>
+        <li><a href="https://www.npmjs.com/package/class-transformer" target="_blank" rel="noopener">class-transformer v0.5</a></li>
+        <li><a href="https://www.npmjs.com/package/@nestjs/config" target="_blank" rel="noopener">@nestjs/config v3.x</a></li>
+        <li><a href="https://www.npmjs.com/package/pg" target="_blank" rel="noopener">pg v8.x</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>📐 8 Módulos CRUD</h3>
+      <ul>
+        <li>👨‍🎓 Estudiantes</li>
+        <li>👨‍🏫 Docentes</li>
+        <li>🏫 Programas Académicos</li>
+        <li>📚 Asignaturas</li>
+        <li>📅 Periodos Académicos</li>
+        <li>🔗 Asignaciones Docente</li>
+        <li>📋 Matrículas</li>
+        <li>🎯 Calificaciones</li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3>📖 Documentación oficial</h3>
+      <ul>
+        <li><a href="https://docs.nestjs.com" target="_blank" rel="noopener">docs.nestjs.com</a></li>
+        <li><a href="https://www.prisma.io/docs" target="_blank" rel="noopener">prisma.io/docs</a></li>
+        <li><a href="https://docs.docker.com" target="_blank" rel="noopener">docs.docker.com</a></li>
+        <li><a href="https://www.postgresql.org/docs" target="_blank" rel="noopener">postgresql.org/docs</a></li>
+        <li><a href="https://www.typescriptlang.org/docs" target="_blank" rel="noopener">typescriptlang.org/docs</a></li>
+        <li><a href="https://github.com/typestack/class-validator#readme" target="_blank" rel="noopener">class-validator README</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    Programación Avanzada · CORHUILA · 2026 — Sistema de Gestión Académica
+  </div>
+</footer>
+
+</body>
+</html>
